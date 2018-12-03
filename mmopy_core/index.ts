@@ -51,7 +51,7 @@ export class Simulation {
             throw new Error("Time stamp must be integer.");
         }
         let lastState = _.last(this.states);
-        let newState: BirdState | null = null;
+        let newState: BirdState;
         if (_.isUndefined(lastState)) {
             newState = new BirdState(this.startX, this.startY);
         } else {
@@ -88,16 +88,11 @@ export class Simulation {
      * Calculates intermediary state, based on all the jumps and given time.
      * @param time Time in frames
      */
-    public positionAt(time: number): BirdState {
-        let currentState = _.first(this.states);
-        for (let i = 1; i < this.states.length; ++i) {
-            if (this.states[i].time > time) {
-                currentState = this.states[i - 1];
-                break;
-            }
+    public positionAt(time: number): BirdState | null {
+        let i = _.findLastIndex(this.states, (s: BirdState) => s.time <= time);
+        if (i > 0){
+            return this.calcState(this.states[i], time);
         }
-        if (currentState) {
-            return currentState;
-        }
+        return null;
     }
 }
