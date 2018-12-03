@@ -72,7 +72,7 @@ export class Simulation {
         let dt = time - this.lastState.time;
         return {
             time: time,
-            x: this.lastState.x + this.hspeed,
+            x: this.lastState.x + this.hspeed * dt,
             y: this.lastState.y +
                 this.lastState.vspeed * dt +
                 0.5 * this.gravity * dt * dt,
