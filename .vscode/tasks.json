@@ -1,0 +1,30 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "watch-node",
+            "type": "npm",
+            "script": "watch-node",
+            "group": "build",
+        },
+        {
+            "label": "watch-ts",
+            "type": "npm",
+            "script": "watch-ts",
+            "group": "build",
+        },
+        {
+            "label": "watch",
+            "dependsOn": [
+                "watch-ts",
+                "watch-node"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+        }
+    ]
+}
