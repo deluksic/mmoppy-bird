@@ -1,19 +1,19 @@
 import _ from 'lodash';
 
-export class Jump {
-    /** Frame number */
-    time: number;
-}
-
 export class BirdState {
     /** Position x in units */
-    x: number;
+    public x: number;
     /** Position y in units */
-    y: number;
+    public y: number;
     /** Speed in units/frame */
-    vspeed: number;
+    public vspeed: number = 0;
     /** Frame number */
-    time: number;
+    public time: number = 0;
+
+    constructor(x: number, y: number) {
+        this.x = x;
+        this.y = y;
+    }
 }
 
 export class Bird {
@@ -24,24 +24,20 @@ export class Bird {
 }
 
 export class Simulation {
+    public startX: number = 0;
+    public startY: number = 100;
     public hspeed: number = 5;
+    public jumpSpeed: number = 10;
     public gravity: number = -1;
     public ceiling: number = 200;
     public seed: number;
     public bird: Bird;
-    public jumps: Jump[];
+    public states: BirdState[];
 
-    public lastState: BirdState;
-
-    constructor(bird: Bird) {
+    constructor(bird: Bird, seed: number) {
         this.bird = bird;
-        this.jumps = [];
-        this.lastState = {
-            x: 0,
-            y: 0,
-            vspeed: 0,
-            time: 0,
-        }
+        this.states = [];
+        this.seed = seed;
     }
 
     /**
@@ -53,30 +49,37 @@ export class Simulation {
         if (time % 1 !== 0) {
             throw new Error("Time stamp must be integer.");
         }
-        if (!_.isEmpty(this.jumps) && _.last(this.jumps).time >= time) {
-            throw new Error("New jump can not be older than the last one.");
+        let lastState: BirdState | undefined = undefined;
+        if (_.isEmpty(this.states)) {
+            this.states.push(new BirdState(this.startX, this.startY));
+        } else {
+            lastState = _.last(this.states);
+            if (lastState) {
+                if (lastState.time >= time) {
+                    throw new Error("New jump can not be older than the last one.");
+                }
+                lastState = this.getPosition(lastState, time);
+                lastState.vspeed = this.jumpSpeed; // this performs the jump
+                this.states.push(lastState);
+            }
         }
-        this.jumps.push({ time: time });
-        this.lastState = this.getPosition(time);
     }
 
     /**
-     * Gets the position of the bird given last jump and current time.
+     * Calculates the parabolic motion given a last state and current time.
      * NOTE: Time can be a fraction too.
      * @param time Time in frames
      */
-    public getPosition(time: number): BirdState {
-        if (time < this.lastState.time) {
+    public getPosition(last: BirdState, time: number): BirdState {
+        if (time < last.time) {
             throw new Error("Can not get position in the past.")
         }
-        let dt = time - this.lastState.time;
+        let dt = time - last.time;
         return {
             time: time,
-            x: this.lastState.x + this.hspeed * dt,
-            y: this.lastState.y +
-                this.lastState.vspeed * dt +
-                0.5 * this.gravity * dt * dt,
-            vspeed: this.lastState.vspeed + this.gravity * dt,
+            x: last.x + this.hspeed * dt,
+            y: last.y + last.vspeed * dt + 0.5 * this.gravity * dt * dt,
+            vspeed: last.vspeed + this.gravity * dt,
         }
     }
 }
