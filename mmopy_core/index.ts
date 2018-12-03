@@ -32,12 +32,22 @@ export class Simulation {
     public ceiling: number = 200;
     public seed: number;
     public bird: Bird;
-    public states: BirdState[];
+    public states: BirdState[] | undefined;
 
     constructor(bird: Bird, seed: number) {
         this.bird = bird;
-        this.states = [];
         this.seed = seed;
+    }
+
+    /**
+     * Init should be called first before doing anything with the simulation.
+     * It creates the states array and adds the initial state.
+     * @returns The initial state
+     */
+    public init(): BirdState {
+        let initState = new BirdState(this.startX, this.startY);
+        this.states = [initState];
+        return initState;
     }
 
     /**
@@ -50,25 +60,25 @@ export class Simulation {
         if (time % 1 !== 0) {
             throw new Error("Time stamp must be integer.");
         }
+        if (_.isUndefined(this.states)) {
+            throw new Error("Call init on a simulation before doing anything else.")
+        }
         let lastState = _.last(this.states);
-        let newState: BirdState;
-        if (_.isUndefined(lastState)) {
-            newState = new BirdState(this.startX, this.startY);
-        } else {
+        if (lastState) {
             if (time <= lastState.time) {
                 throw new Error("New jump can not be older than the last one.");
             }
-            newState = this.calcState(lastState, time);
+            let newState = this.calcState(lastState, time);
             newState.vspeed = this.jumpSpeed; // this performs the jump
+            this.states.push(newState);
+            return newState;
         }
-        this.states.push(newState);
-        return newState;
+        throw new Error("For some reason last returned undefined. This shouldn't happen.");
     }
 
     /**
      * Calculates the parabolic motion given a 'last' state and current time.
-     * NOTE: Time can be a fraction too.
-     * @param time Time in frames
+     * @param time Time in frames (fraction is OK)
      * @returns Calculated state
      */
     private calcState(last: BirdState, time: number): BirdState {
@@ -86,13 +96,16 @@ export class Simulation {
 
     /**
      * Calculates intermediary state, based on all the jumps and given time.
-     * @param time Time in frames
+     * @param time Time in frames (fraction is OK)
      */
-    public positionAt(time: number): BirdState | null {
+    public positionAt(time: number): BirdState {
+        if (_.isUndefined(this.states)) {
+            throw new Error("Call init on a simulation before doing anything else.")
+        }
         let i = _.findLastIndex(this.states, (s: BirdState) => s.time <= time);
-        if (i > 0){
+        if (i >= 0) {
             return this.calcState(this.states[i], time);
         }
-        return null;
+        throw new Error("Could not find any states that are earlier than current time.");
     }
 }
