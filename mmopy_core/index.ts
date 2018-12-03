@@ -55,7 +55,7 @@ export class Simulation {
         } else {
             lastState = _.last(this.states);
             if (lastState) {
-                if (lastState.time >= time) {
+                if (time <= lastState.time) {
                     throw new Error("New jump can not be older than the last one.");
                 }
                 lastState = this.getPosition(lastState, time);
