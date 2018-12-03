@@ -44,35 +44,36 @@ export class Simulation {
      * Add a jump discontinuity at a given time.
      * NOTE: time must be integer, in frames.
      * @param time Integer time in frames
+     * @returns New state after jump
      */
-    public addJump(time: number) {
+    public addJump(time: number): BirdState {
         if (time % 1 !== 0) {
             throw new Error("Time stamp must be integer.");
         }
-        let lastState: BirdState | undefined = undefined;
-        if (_.isEmpty(this.states)) {
-            this.states.push(new BirdState(this.startX, this.startY));
+        let lastState = _.last(this.states);
+        let newState: BirdState | null = null;
+        if (_.isUndefined(lastState)) {
+            newState = new BirdState(this.startX, this.startY);
         } else {
-            lastState = _.last(this.states);
-            if (lastState) {
-                if (time <= lastState.time) {
-                    throw new Error("New jump can not be older than the last one.");
-                }
-                lastState = this.getPosition(lastState, time);
-                lastState.vspeed = this.jumpSpeed; // this performs the jump
-                this.states.push(lastState);
+            if (time <= lastState.time) {
+                throw new Error("New jump can not be older than the last one.");
             }
+            newState = this.calcState(lastState, time);
+            newState.vspeed = this.jumpSpeed; // this performs the jump
         }
+        this.states.push(newState);
+        return newState;
     }
 
     /**
-     * Calculates the parabolic motion given a last state and current time.
+     * Calculates the parabolic motion given a 'last' state and current time.
      * NOTE: Time can be a fraction too.
      * @param time Time in frames
+     * @returns Calculated state
      */
-    public getPosition(last: BirdState, time: number): BirdState {
+    private calcState(last: BirdState, time: number): BirdState {
         if (time < last.time) {
-            throw new Error("Can not get position in the past.")
+            throw new Error("Can not get state in the past.")
         }
         let dt = time - last.time;
         return {
@@ -80,6 +81,23 @@ export class Simulation {
             x: last.x + this.hspeed * dt,
             y: last.y + last.vspeed * dt + 0.5 * this.gravity * dt * dt,
             vspeed: last.vspeed + this.gravity * dt,
+        }
+    }
+
+    /**
+     * Calculates intermediary state, based on all the jumps and given time.
+     * @param time Time in frames
+     */
+    public positionAt(time: number): BirdState {
+        let currentState = _.first(this.states);
+        for (let i = 1; i < this.states.length; ++i) {
+            if (this.states[i].time > time) {
+                currentState = this.states[i - 1];
+                break;
+            }
+        }
+        if (currentState) {
+            return currentState;
         }
     }
 }
