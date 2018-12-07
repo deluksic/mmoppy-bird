@@ -2,12 +2,12 @@
   "name": "mmopy_server",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/server.js",
+  "main": "build/server.js",
   "scripts": {
     "build-ts": "tsc",
     "start": "concurrently \"npm:watch-*\"",
-    "serve": "node dist/server.js",
-    "watch-node": "nodemon dist/server.js",
+    "serve": "node build/server.js",
+    "watch-node": "nodemon build/server.js",
     "watch-ts": "tsc -w"
   },
   "author": "",

@@ -2,7 +2,6 @@ import express from 'express';
 import http from 'http';
 import WebSocket from 'ws';
 import { AddressInfo } from 'net';
-import { Bird } from 'mmopy_core';
 
 const app = express();
 
@@ -10,7 +9,7 @@ const app = express();
 const server = http.createServer(app);
 
 //main page
-app.use(express.static('../mmopy_client/public'));
+app.use(express.static('../mmopy_client/build'));
 
 //initialize the WebSocket server instance
 const wss = new WebSocket.Server({ server });
