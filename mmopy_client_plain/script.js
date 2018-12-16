@@ -90,7 +90,7 @@ window.onload = () => {
 
 	var drawBird = (x, y, name, rotation) => {
 		ctx.save();
-		ctx.scale(0.25, 0.25);
+		ctx.scale(0.15, 0.15);
 		ctx.translate(x, y);
 
 		let middleX = 762/2;
@@ -101,14 +101,14 @@ window.onload = () => {
 		ctx.translate(-middleX, -middleY);
 
 		let frame = ((offset / 4) % 7) | 0;
-		ctx.drawImage(bird[frame], 100, 100);
+		ctx.drawImage(bird[frame], 100, 300);
 
 		ctx.translate(middleX, middleY);
 		ctx.rotate(- rotation);
 		ctx.translate(-middleX, -middleY);
 
 		ctx.fillStyle = 'rgb(135, 0, 235)';
-		ctx.font = "128px Sans";
+		ctx.font = "160px Sans";
 		ctx.fillText(name, 0, 200);
 		ctx.restore();
 	}
@@ -127,8 +127,8 @@ window.onload = () => {
 		drawClouds();
 		drawGround();
 		drawGrass();
-		let y = ((Math.sin(offset / 20) + 1) * 600) | 0;
-		let rotate = ((Math.sin(offset / 20)));
+		let y = ((Math.sin(offset / 20) + 1) * 1200) | 0;
+		let rotate = ((Math.sin(offset / 20 + 2)));
 		drawBird(510, y, "Petar", rotate);
 		offset += 1;
 
