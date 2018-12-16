@@ -5,8 +5,10 @@ document, body, canvas {
 
 body {
 	background-color: black;
+	display: flex;
+	align-items: center;
+	height: 100vh;
 }
 
 #canvas {
-	outline: 1px solid red;
 }
