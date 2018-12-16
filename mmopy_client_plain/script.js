@@ -5,6 +5,7 @@ window.onload = () => {
 	let ctx = canvas.getContext("2d");
 
 	var offset = 0;
+	var assetDone = 0;
 
 	let ground = new Image();
 	ground.src = "asset/ground.jpg";
@@ -21,6 +22,13 @@ window.onload = () => {
 	var skylinePattern;
 	skyline.onload = () => skylinePattern = ctx.createPattern(skyline, 'repeat');
 
+	let bird = [1, 2, 3, 4, 5, 6, 7, 8].map((x) => {
+		let image = new Image();
+		image.src = "asset/bird/frame-" + x + ".png";
+		image.onload = () => ++assetDone;
+		return image;
+	});
+
 	var resizeCanvas = () => {
 		canvas.width = window.innerWidth;
 		canvas.height = window.innerWidth * (9 / 16);
@@ -30,7 +38,7 @@ window.onload = () => {
 		ctx.save();
 		ctx.translate(-offset * 0.5, 0);
 		ctx.fillStyle = grassPattern;
-		ctx.fillRect(offset * 0.5, window.innerHeight - 300, window.innerWidth, 50);
+		ctx.fillRect(offset * 0.5, canvas.height - 150, canvas.width, 50);
 		ctx.restore();
 	}
 
@@ -38,13 +46,13 @@ window.onload = () => {
 		ctx.save();
 		ctx.translate(-offset * 0.5, 0);
 		ctx.fillStyle = groundPattern;
-		ctx.fillRect(offset * 0.5, window.innerHeight - 250, window.innerWidth, 100);
+		ctx.fillRect(offset * 0.5, canvas.height - 100, canvas.width, 100);
 		ctx.restore();
 	}
 
 	var drawCloud = (x, y, speedFactor) => {
 		ctx.save();
-		ctx.translate(mod(x - offset * speedFactor + 100, window.innerWidth + 400) - 400, y);
+		ctx.translate(mod(x - offset * speedFactor + 100, canvas.width + 400) - 400, y);
 		ctx.beginPath();
 		ctx.moveTo(170, 80);
 		ctx.bezierCurveTo(130, 100, 130, 150, 230, 150);
@@ -62,7 +70,7 @@ window.onload = () => {
 
 	var drawSky = () => {
 		ctx.fillStyle = 'rgb(135, 206, 235)';
-		ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+		ctx.fillRect(0, 0, canvas.width, canvas.height - 150);
 	}
 
 	var drawClouds = () => {
@@ -76,19 +84,55 @@ window.onload = () => {
 		ctx.translate(-offset * 0.1, 0);
 		ctx.globalAlpha = 0.10;
 		ctx.fillStyle = skylinePattern;
-		ctx.fillRect(offset * 0.1, 100, window.innerWidth, window.innerHeight);
+		ctx.fillRect(offset * 0.1, 100, canvas.width, canvas.height);
 		ctx.restore();
 	}
 
+	var drawBird = (x, y, name, rotation) => {
+		ctx.save();
+		ctx.scale(0.25, 0.25);
+		ctx.translate(x, y);
+
+		let middleX = 762/2;
+		let middleY = 603/2;
+
+		ctx.translate(middleX, middleY);
+		ctx.rotate(rotation);
+		ctx.translate(-middleX, -middleY);
+
+		let frame = ((offset / 4) % 7) | 0;
+		ctx.drawImage(bird[frame], 100, 100);
+
+		ctx.translate(middleX, middleY);
+		ctx.rotate(- rotation);
+		ctx.translate(-middleX, -middleY);
+
+		ctx.fillStyle = 'rgb(135, 0, 235)';
+		ctx.font = "128px Sans";
+		ctx.fillText(name, 0, 200);
+		ctx.restore();
+	}
+
+	resizeCanvas();
+	window.onresize = () => resizeCanvas();
+
 	var runLoop = () => {
-		resizeCanvas();
+		if(assetDone <= 7) {
+			window.requestAnimationFrame(runLoop);
+			return;
+		}
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		drawSky();
 		drawSkyline();
 		drawClouds();
 		drawGround();
 		drawGrass();
-		window.requestAnimationFrame(runLoop);
+		let y = ((Math.sin(offset / 20) + 1) * 600) | 0;
+		let rotate = ((Math.sin(offset / 20)));
+		drawBird(510, y, "Petar", rotate);
 		offset += 1;
+
+		window.requestAnimationFrame(runLoop);
 	}
 
 	runLoop();
