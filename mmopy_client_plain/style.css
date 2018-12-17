@@ -1,0 +1,14 @@
+document, body, canvas {
+	padding: 0;
+	margin: 0;
+}
+
+body {
+	background-color: black;
+	display: flex;
+	align-items: center;
+	height: 100vh;
+}
+
+#canvas {
+}
