@@ -8,6 +8,7 @@ let canvas: HTMLCanvasElement;
 let context: CanvasRenderingContext2D;
 
 var assetDone = 0;
+var isGameOver = false;
 
 let groundPattern: CanvasPattern;
 let grassPattern: CanvasPattern;
@@ -163,8 +164,17 @@ function drawPillars() {
 	drawPillar(1600, 0.5);
 }
 
+function gameOver() {
+	isGameOver = true;
+}
+
 export function playerAction() {
-	currentSimulation.addJump(offset + 1);
+	if(!isGameOver) {
+		currentSimulation.addJump(offset + 1);
+	} else {
+		startSimulation();
+		isGameOver = false;
+	}
 }
 
 export function render() {
@@ -191,5 +201,12 @@ export function render() {
 		"Petar",
 		-playerPosition.vspeed / 15
 	);
-    ++offset; 
+
+	if(playerPosition.y < -220) {
+		gameOver();
+	}
+
+	if(!isGameOver) {
+	    ++offset; 
+	}
 }
