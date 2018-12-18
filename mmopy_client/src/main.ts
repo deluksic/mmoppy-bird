@@ -140,6 +140,19 @@ var drawBird = (x: number, y: number, name: string, rotation: number) => {
 	context.restore();
 }
 
+function drawPillar(x: number, yMiddle: number) {
+	context.fillStyle = "rgb(0, 0, 0)";
+	context.fillRect(x - offset * 0.5, 0, 80, 500 * yMiddle);
+	context.fillRect(x - offset * 0.5, 500 * yMiddle + 300, 80, 1000);
+}
+
+function drawPillars() {
+	drawPillar(400, 0.5);
+	drawPillar(800, 0.25);
+	drawPillar(1200, 0.75);
+	drawPillar(1600, 0.5);
+}
+
 export function playerAction() {
 	currentSimulation.addJump(offset + 1);
 }
@@ -152,6 +165,7 @@ export function render() {
 	context.clearRect(0, 0, canvas.width, canvas.height);
 	drawSky();
 	drawSkyline();
+	drawPillars();
 	drawClouds();
 	drawGround();
 	drawGrass();
