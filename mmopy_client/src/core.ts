@@ -28,7 +28,7 @@ export class Simulation {
     public startY: number = 100;
     public hspeed: number = 5;
     public jumpSpeed: number = 10;
-    public gravity: number = -0.7;
+    public gravity: number = -0.5;
     public ceiling: number = 200;
     public seed: number;
     public bird: Bird;

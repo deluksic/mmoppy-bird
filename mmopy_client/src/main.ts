@@ -140,6 +140,9 @@ var drawBird = (x: number, y: number, name: string, rotation: number) => {
 	context.restore();
 }
 
+export function playerAction() {
+	currentSimulation.addJump(offset + 1);
+}
 
 export function render() {
 	if(assetDone <= 7) {
@@ -155,15 +158,11 @@ export function render() {
 
 	let playerPosition = currentSimulation.positionAt(offset);
 
-	if(offset % 29 == 0) {
-		currentSimulation.addJump(offset+1);
-	}
-
 	drawBird(
 		playerPosition.x,
 		-playerPosition.y * 10 + 1500,
 		"Petar",
-		-playerPosition.vspeed / 10
+		-playerPosition.vspeed / 15
 	);
     ++offset; 
 }
