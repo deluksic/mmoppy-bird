@@ -1,4 +1,4 @@
-import { Bird, Simulation } from './core';
+import { Bird, Simulation } from './mmopy_core';
 import { AnyARecord } from 'dns';
 
 let currentSimulation: Simulation;

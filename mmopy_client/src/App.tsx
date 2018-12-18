@@ -1,8 +1,5 @@
 import * as React from 'react';
-import './App.css';
 import {init, render} from './main';
-
-import logo from './logo.svg';
 
 class SimpleState {
   public message: string | null;
