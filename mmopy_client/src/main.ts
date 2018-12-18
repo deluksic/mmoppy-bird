@@ -20,6 +20,11 @@ let bird = [1, 2, 3, 4, 5, 6, 7, 8].map((x) => {
 		return image;
 })
 
+let leaderboard = [
+	["david", 128],
+	["petar", 96]
+];
+
 function mod(x: number, y: number) {
     return ((x % y) + y) % y;
 }
@@ -134,6 +139,17 @@ var drawBird = (x: number, y: number, name: string, rotation: number) => {
 	context.restore();
 }
 
+function drawLeaderboard() {
+	context.fillStyle = "rgb(135, 0, 235)";
+	context.font = "32px Sans";
+	var offset = 0;
+	for(let index in leaderboard) {
+		let entry = leaderboard[index];
+		context.fillText((parseInt(index) + 1)+ ". " + entry[0] + " : " + entry[1], 900, offset * 50 + 100);
+		++offset
+	}
+}
+
 function drawPillar(x: number, yMiddle: number) {
 	context.fillStyle = "rgb(0, 0, 0)";
 	context.fillRect(x - offset * 0.5, 0, 80, 500 * yMiddle);
@@ -165,6 +181,7 @@ export function render() {
 	drawCloud(830, 20, 0.8);
 	drawGround();
 	drawGrass();
+	drawLeaderboard();
 
 	let playerPosition = currentSimulation.positionAt(offset);
 
