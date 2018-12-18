@@ -15,6 +15,9 @@ let groundPattern: CanvasPattern;
 let grassPattern: CanvasPattern;
 let skylinePattern: CanvasPattern;
 
+let ferLogo = new Image();
+ferLogo.src = "asset/FER_logo.png";
+
 let bird = [1, 2, 3, 4, 5, 6, 7, 8].map((x) => {
         let image = new Image();
 		image.src = "asset/bird/frame-" + x + ".png";
@@ -67,6 +70,12 @@ function initPatterns() {
     let skyline = new Image();
     skyline.src = "asset/skyline.png";
 	skyline.onload = () => skylinePattern = context.createPattern(skyline, 'repeat')!;
+}
+
+function drawFERLogo() {
+	context.globalAlpha = 0.50;
+	context.drawImage(ferLogo, 500 - offset * 0.25, 250, ferLogo.width, ferLogo.height);
+	context.globalAlpha = 1.0;
 }
 
 var drawGrass = () => {
@@ -188,6 +197,7 @@ export function render() {
 	context.clearRect(0, 0, canvas.width, canvas.height);
 	drawSky();
 	drawSkyline();
+	drawFERLogo();
 	drawCloud(170, 80, 1.0);
 	drawPillars();
 	drawCloud(1000, 40, 0.9);
