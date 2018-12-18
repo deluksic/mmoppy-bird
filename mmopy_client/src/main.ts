@@ -10,6 +10,7 @@ let context: CanvasRenderingContext2D;
 var assetDone = 0;
 var isGameOver = false;
 
+let playerName: string;
 let groundPattern: CanvasPattern;
 let grassPattern: CanvasPattern;
 let skylinePattern: CanvasPattern;
@@ -39,6 +40,8 @@ function startSimulation() {
 }
 
 export function init() {
+	playerName = prompt("Enter your name")!;
+
     canvas = document.getElementById("main_canvas") as HTMLCanvasElement;
 
     canvas.width = 1280;
@@ -198,7 +201,7 @@ export function render() {
 	drawBird(
 		playerPosition.x,
 		-playerPosition.y * 10 + 1500,
-		"Petar",
+		playerName,
 		-playerPosition.vspeed / 15
 	);
 
