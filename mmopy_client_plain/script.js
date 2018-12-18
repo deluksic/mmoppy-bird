@@ -31,7 +31,7 @@ window.onload = () => {
 
 	var resizeCanvas = () => {
 		canvas.width = window.innerWidth;
-		canvas.height = window.innerWidth * (9 / 16);
+		canvas.height = window.innerHeight;
 	}
 	
 	var drawGrass = () => {
