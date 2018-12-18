@@ -119,15 +119,16 @@ var drawBird = (x: number, y: number, name: string, rotation: number) => {
 	context.scale(0.15, 0.15);
 	context.translate(x, y);
 
-	let middleX = 762/2;
-	let middleY = 603/2;
+	let frame = ((offset / 4) % 7) | 0;
+
+	let middleX = bird[frame].width / 2;
+	let middleY = bird[frame].height / 2;
 
 	context.translate(middleX, middleY);
 	context.rotate(rotation);
 	context.translate(-middleX, -middleY);
 
-	let frame = ((offset / 4) % 7) | 0;
-	context.drawImage(bird[frame], 100, 300);
+	context.drawImage(bird[frame], 0, 0);
 
 	context.translate(middleX, middleY);
 	context.rotate(- rotation);
@@ -135,7 +136,7 @@ var drawBird = (x: number, y: number, name: string, rotation: number) => {
 
 	context.fillStyle = 'rgb(135, 0, 235)';
 	context.font = "160px Sans";
-	context.fillText(name, 0, 200);
+	context.fillText(name, 0, 0);
 	context.restore();
 }
 
@@ -162,7 +163,7 @@ export function render() {
 		playerPosition.x,
 		-playerPosition.y * 10 + 1500,
 		"Petar",
-		1//-playerPosition.vspeed / 20
+		-playerPosition.vspeed / 20
 	);
     ++offset; 
 }
