@@ -163,7 +163,7 @@ export function render() {
 		playerPosition.x,
 		-playerPosition.y * 10 + 1500,
 		"Petar",
-		-playerPosition.vspeed / 20
+		-playerPosition.vspeed / 10
 	);
     ++offset; 
 }
