@@ -2,3 +2,4 @@ grass.jpg	https://opengameart.org/node/10183
 ground.jpg	https://opengameart.org/node/10180
 skyline.png	https://opengameart.org/content/skyline
 bird        https://opengameart.org/content/bevouliin-free-game-character-grumpy-bird
+FER_logo.png	https://www.fer.unizg.hr/_pub/themes_static/fer2016/default/img/FER_logo.png

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {init, render} from './main';
+import {init, render, playerAction} from './main';
 
 class SimpleState {
   public message: string | null;
@@ -31,7 +31,7 @@ class App extends React.Component<{}, SimpleState> {
   public render() {
     return (
       <div className="App">
-        <canvas id="main_canvas"></canvas>
+        <canvas id="main_canvas" onClick={playerAction}></canvas>
         {this.state.message &&
           <p>
             We received this message: {this.state.message}

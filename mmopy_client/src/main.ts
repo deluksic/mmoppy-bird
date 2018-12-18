@@ -8,10 +8,15 @@ let canvas: HTMLCanvasElement;
 let context: CanvasRenderingContext2D;
 
 var assetDone = 0;
+var isGameOver = false;
 
+let playerName: string;
 let groundPattern: CanvasPattern;
 let grassPattern: CanvasPattern;
 let skylinePattern: CanvasPattern;
+
+let ferLogo = new Image();
+ferLogo.src = "asset/FER_logo.png";
 
 let bird = [1, 2, 3, 4, 5, 6, 7, 8].map((x) => {
         let image = new Image();
@@ -19,6 +24,11 @@ let bird = [1, 2, 3, 4, 5, 6, 7, 8].map((x) => {
 		image.onload = () => ++assetDone;
 		return image;
 })
+
+let leaderboard = [
+	["david", 128],
+	["petar", 96]
+];
 
 function mod(x: number, y: number) {
     return ((x % y) + y) % y;
@@ -33,6 +43,8 @@ function startSimulation() {
 }
 
 export function init() {
+	playerName = prompt("Enter your name")!;
+
     canvas = document.getElementById("main_canvas") as HTMLCanvasElement;
 
     canvas.width = 1280;
@@ -58,6 +70,12 @@ function initPatterns() {
     let skyline = new Image();
     skyline.src = "asset/skyline.png";
 	skyline.onload = () => skylinePattern = context.createPattern(skyline, 'repeat')!;
+}
+
+function drawFERLogo() {
+	context.globalAlpha = 0.50;
+	context.drawImage(ferLogo, 500 - offset * 0.25, 250, ferLogo.width, ferLogo.height);
+	context.globalAlpha = 1.0;
 }
 
 var drawGrass = () => {
@@ -99,12 +117,6 @@ var drawSky = () => {
 	context.fillRect(0, 0, canvas.width, canvas.height - 150);
 }
 
-var drawClouds = () => {
-	drawCloud(170, 80, 1.0);
-	drawCloud(1000, 40, 0.9);
-	drawCloud(830, 20, 0.8);
-}
-
 var drawSkyline = () => {
 	context.save();
 	context.translate(-offset * 0.1, 0);
@@ -140,6 +152,42 @@ var drawBird = (x: number, y: number, name: string, rotation: number) => {
 	context.restore();
 }
 
+function drawLeaderboard() {
+	context.fillStyle = "rgb(135, 0, 235)";
+	context.font = "32px Sans";
+	var offset = 0;
+	for(let index in leaderboard) {
+		let entry = leaderboard[index];
+		context.fillText((parseInt(index) + 1)+ ". " + entry[0] + " : " + entry[1], 900, offset * 50 + 100);
+		++offset
+	}
+}
+
+function drawPillar(x: number, yMiddle: number) {
+	context.fillStyle = "rgb(0, 0, 0)";
+	context.fillRect(x - offset * 0.5, 0, 80, 500 * yMiddle);
+	context.fillRect(x - offset * 0.5, 500 * yMiddle + 300, 80, 1000);
+}
+
+function drawPillars() {
+	drawPillar(400, 0.5);
+	drawPillar(800, 0.25);
+	drawPillar(1200, 0.75);
+	drawPillar(1600, 0.5);
+}
+
+function gameOver() {
+	isGameOver = true;
+}
+
+export function playerAction() {
+	if(!isGameOver) {
+		currentSimulation.addJump(offset + 1);
+	} else {
+		startSimulation();
+		isGameOver = false;
+	}
+}
 
 export function render() {
 	if(assetDone <= 7) {
@@ -149,21 +197,29 @@ export function render() {
 	context.clearRect(0, 0, canvas.width, canvas.height);
 	drawSky();
 	drawSkyline();
-	drawClouds();
+	drawFERLogo();
+	drawCloud(170, 80, 1.0);
+	drawPillars();
+	drawCloud(1000, 40, 0.9);
+	drawCloud(830, 20, 0.8);
 	drawGround();
 	drawGrass();
+	drawLeaderboard();
 
 	let playerPosition = currentSimulation.positionAt(offset);
-
-	if(offset % 29 == 0) {
-		currentSimulation.addJump(offset+1);
-	}
 
 	drawBird(
 		playerPosition.x,
 		-playerPosition.y * 10 + 1500,
-		"Petar",
-		-playerPosition.vspeed / 10
+		playerName,
+		-playerPosition.vspeed / 15
 	);
-    ++offset; 
+
+	if(playerPosition.y < -220) {
+		gameOver();
+	}
+
+	if(!isGameOver) {
+	    ++offset; 
+	}
 }
