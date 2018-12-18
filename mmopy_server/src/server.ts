@@ -2,9 +2,11 @@ import express from 'express';
 import http from 'http';
 import WebSocket from 'ws';
 import { AddressInfo } from 'net';
-import { Bird } from 'mmopy_core';
+import { Bird } from './mmopy_core';
 
 const app = express();
+
+new Bird("hello");
 
 //initialize a simple http server
 const server = http.createServer(app);

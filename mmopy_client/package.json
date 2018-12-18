@@ -5,8 +5,7 @@
   "dependencies": {
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
-    "react-scripts-ts": "3.1.0",
-    "mmopy_core": "^1.0.0"
+    "react-scripts-ts": "3.1.0"
   },
   "scripts": {
     "start": "react-scripts-ts start",
