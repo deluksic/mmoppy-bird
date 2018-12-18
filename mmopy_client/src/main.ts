@@ -99,12 +99,6 @@ var drawSky = () => {
 	context.fillRect(0, 0, canvas.width, canvas.height - 150);
 }
 
-var drawClouds = () => {
-	drawCloud(170, 80, 1.0);
-	drawCloud(1000, 40, 0.9);
-	drawCloud(830, 20, 0.8);
-}
-
 var drawSkyline = () => {
 	context.save();
 	context.translate(-offset * 0.1, 0);
@@ -165,8 +159,10 @@ export function render() {
 	context.clearRect(0, 0, canvas.width, canvas.height);
 	drawSky();
 	drawSkyline();
+	drawCloud(170, 80, 1.0);
 	drawPillars();
-	drawClouds();
+	drawCloud(1000, 40, 0.9);
+	drawCloud(830, 20, 0.8);
 	drawGround();
 	drawGrass();
 
