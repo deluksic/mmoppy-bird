@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "baseUrl": "src",
+        "target": "es6",
+        "noImplicitAny": true
+    },
+    "include": [
+        "src/client",
+        "src/core",
+        "src/server"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}

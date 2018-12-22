@@ -1,0 +1,6 @@
+{
+    "sourceRoot": "src",
+    "presets": [
+        "@babel/preset-env"
+    ]
+}
