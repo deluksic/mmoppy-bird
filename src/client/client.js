@@ -3,7 +3,7 @@ const io = require('socket.io-client');
 const {
     Events,
     PlayerState
-} = require('core/events');
+} = require('core/networking');
 
 /** @type {{[key: string]: PlayerState}} */
 const players = {};
@@ -25,10 +25,11 @@ function jump(timestamp) {
 }
 
 /**
- * @param {number} x 
+ * @param {number} x
+ * @param {(res: number) => void} cb
  */
-function rpcTest(x) {
-    events.RPCTest.call(x, (res) => console.log(res));
+function rpcTest(x, cb) {
+    events.RPCTest.call(x, cb);
 }
 
 function onConnect() {

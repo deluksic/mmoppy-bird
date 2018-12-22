@@ -77,10 +77,7 @@ function init() {
     startSimulation();
 
     // Testing out networking
-    setInterval(() => {
-        jump(performance.now());
-    }, 5000);
-    rpcTest(10);
+    rpcTest(10, (res) => console.log(res));
 }
 
 function initPatterns() {
@@ -223,6 +220,8 @@ function gameOver() {
 function playerAction() {
     if (!isGameOver) {
         currentSimulation.addJump(offset + 1);
+        // TODO: Implement this for real
+        jump(offset + 1);
     } else {
         startSimulation();
         isGameOver = false;

@@ -5,7 +5,7 @@ const socketio = require('socket.io');
 const {
     Events,
     PlayerState
-} = require('../core/events');
+} = require('../core/networking');
 
 var app = express();
 
