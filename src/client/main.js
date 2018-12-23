@@ -250,6 +250,22 @@ function render() {
 
     let playerPosition = currentSimulation.positionAt(offset);
 
+    // Draw other players
+    // TODO: Choppy!
+    for (let playerid in players) {
+        let player = players[playerid];
+        if (player.id === localPlayer.id) {
+            continue;
+        }
+        drawBird(
+            player.birdState.x,
+            -player.birdState.y * 10 + 1500,
+            player.username,
+            -player.birdState.vspeed / 15
+        );
+    }
+    
+    // Draw local player
     drawBird(
         playerPosition.x,
         -playerPosition.y * 10 + 1500,
