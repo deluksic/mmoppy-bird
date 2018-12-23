@@ -1,4 +1,8 @@
 // @ts-check
+// IMPORTANT: Use relative paths, because Node won't be happy!
+const {
+    BirdState
+} = require('../core/simulation');
 
 /**
  * @abstract
@@ -11,7 +15,8 @@ class NetworkEvent {
     constructor(name, socket) {
         this.name = name;
         /** @type {SocketIO.Socket} */
-        // @ts-ignore
+        // @ts-ignore, because SocketIOClient.Socket
+        // lacks some stuff but we don't care
         this.socket = socket;
     }
 }
@@ -74,6 +79,10 @@ class PlayerState {
      */
     constructor(id) {
         this.id = id;
+        this.birdState = new BirdState();
+        this.username = id;
+        /** @type {number | null} */
+        this.highscore = null;
     }
 }
 
@@ -88,14 +97,16 @@ class Events {
         this.PlayerLeft = new Message('PlayerLeft', socket)
         /** @type {Message<{[playerid: string]: Partial<PlayerState>}>} */
         this.PlayersUpdate = new Message('PlayerUpdate', socket)
-        /** @type {Message<Timestamp>} */
-        this.CmdJump = new Message('CmdJump', socket)
+        /** @type {RPC<Timestamp, PlayerState>} */
+        this.CmdJump = new RPC('CmdJump', socket)
         /** @type {RPC<number, number>} */
         this.RPCTest = new RPC('RPCTest', socket)
+        /** @type {RPC<string, boolean>} */
+        this.RPCSetUsername = new RPC('RPCSetUsename', socket)
     }
 }
 
 module.exports = {
     Events,
-    PlayerState
+    PlayerState,
 }

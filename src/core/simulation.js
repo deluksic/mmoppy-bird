@@ -3,26 +3,22 @@
 const _ = require('lodash');
 
 class BirdState {
-    /**
-     * @param {number} x 
-     * @param {number} y 
-     */
-    constructor(x, y) {
-        this.x = x;
-        this.y = y;
+    constructor() {
+        this.x = 0;
+        this.y = 100;
         this.vspeed = 0;
         this.time = 0;
+        this.valid = true;
     }
 }
 
 class Simulation {
     constructor() {
-        this.startX = 0;
-        this.startY = 100;
         this.hspeed = 10;
         this.jumpSpeed = 8;
         this.gravity = -0.5;
         this.ceiling = 200;
+        this.floor = -220;
         this.seed = 0;
 
         /** @type {BirdState[]} */
@@ -37,7 +33,7 @@ class Simulation {
      */
     init(seed) {
         this.seed = seed;
-        let initState = new BirdState(this.startX, this.startY);
+        let initState = new BirdState();
         this.states = [initState];
         return initState;
     }
@@ -52,7 +48,7 @@ class Simulation {
         if (time % 1 !== 0) {
             throw new Error("Time stamp must be integer.");
         }
-        if (_.isUndefined(this.states)) {
+        if (!this.states) {
             throw new Error("Call init on a simulation before doing anything else.")
         }
         let lastState = _.last(this.states);
@@ -76,15 +72,22 @@ class Simulation {
      */
     calcState(previous, time) {
         if (time < previous.time) {
-            throw new Error("Can not get state in the past.")
+            throw new Error("Can not get state in the past.");
+        }
+        if (!previous.valid) {
+            return previous;
         }
         let dt = time - previous.time;
-        return {
+        /** @type {BirdState} */
+        let newState = {
             time: time,
             x: previous.x + this.hspeed * dt,
             y: previous.y + previous.vspeed * dt + 0.5 * this.gravity * dt * dt,
             vspeed: previous.vspeed + this.gravity * dt,
-        }
+            valid: previous.valid
+        };
+        newState.valid = newState.y > this.floor && newState.y < this.ceiling;
+        return newState;
     }
 
     /**

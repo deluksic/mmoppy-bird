@@ -5,7 +5,9 @@ const {
 const {
     jump,
     rpcTest,
-    players
+    players,
+    localPlayer,
+    setUsername
 } = require('client/client');
 
 /** @type {Simulation} */
@@ -20,9 +22,6 @@ let context;
 
 var assetDone = 0;
 var isGameOver = false;
-
-/** @type {string} */
-let playerName;
 
 /** @type {CanvasPattern} */
 let groundPattern;
@@ -41,11 +40,6 @@ let bird = [1, 2, 3, 4, 5, 6, 7, 8].map((x) => {
     return image;
 })
 
-let leaderboard = [
-    ["david", 128],
-    ["petar", 96]
-];
-
 /**
  * @param {number} x
  * @param {number} y
@@ -61,7 +55,8 @@ function startSimulation() {
 }
 
 function init() {
-    playerName = prompt("Enter your name");
+    let username = prompt("Enter your name");
+    username && setUsername(username);
 
     // @ts-ignore
     canvas = document.getElementById("main_canvas");
@@ -189,9 +184,11 @@ function drawLeaderboard() {
     context.fillStyle = "rgb(135, 0, 235)";
     context.font = "32px Sans";
     var offset = 0;
-    for (let index in leaderboard) {
-        let entry = leaderboard[index];
-        context.fillText((parseInt(index) + 1) + ". " + entry[0] + " : " + entry[1], 900, offset * 50 + 100);
+    var playerObjects = Object.keys(players).map(v => players[v]);
+    playerObjects.sort((a, b) => b.highscore - a.highscore);
+    for (let playerid in playerObjects) {
+        let entry = playerObjects[playerid];
+        context.fillText((parseInt(playerid) + 1) + ". " + entry.username + " : " + entry.highscore, 900, offset * 50 + 100);
         ++offset
     }
 }
@@ -218,13 +215,18 @@ function gameOver() {
 }
 
 function playerAction() {
+    let time = offset + 1;
     if (!isGameOver) {
-        currentSimulation.addJump(offset + 1);
-        // TODO: Implement this for real
-        jump(offset + 1);
+        currentSimulation.addJump(time);
+        jump(time, ps => {
+            console.log(`Server says you jumped at ${ps.birdState.time}.`);
+        });
     } else {
-        startSimulation();
-        isGameOver = false;
+        jump(time, ps => {
+            console.log(`Game over? Server says: ${!ps.birdState.valid}.`)
+            startSimulation();
+            isGameOver = false;
+        });
     }
 }
 
@@ -251,11 +253,11 @@ function render() {
     drawBird(
         playerPosition.x,
         -playerPosition.y * 10 + 1500,
-        playerName,
+        localPlayer.username,
         -playerPosition.vspeed / 15
     );
 
-    if (playerPosition.y < -220) {
+    if (!playerPosition.valid) {
         gameOver();
     }
 
