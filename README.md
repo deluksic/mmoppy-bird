@@ -7,7 +7,7 @@ This project is split into 3 parts:
 - client
 - server
 
-**Core** contains main logic of the game.
+**Core** contains main logic of the game. Also network code.
 
 **Client** contains presentation logic. This can be a console output or a fancy 3D webgl game.
 
