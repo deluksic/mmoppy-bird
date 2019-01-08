@@ -23,8 +23,8 @@ function lerp(a, b, k) {
 
 class BirdState {
     constructor() {
-        this.x = 0;
-        this.y = 100;
+        this.x = 48;
+        this.y = 200;
         this.vspeed = 0;
         this.time = 0;
         this.valid = true;
@@ -48,15 +48,15 @@ class Simulation {
 
     constructor() {
         this.hspeed = 10;
-        this.jumpSpeed = 8;
-        this.gravity = -0.5;
-        this.ceiling = 200;
-        this.floor = -220;
+        this.jumpSpeed = -8;
+        this.gravity = 0.5;
+        this.ceiling = 0;
+        this.floor = 420;
         this.seed = 0;
         this.wallThickness = 20;
         this.wallGap = 150;
         this.wallSeparation = 300;
-        this.birdRadius = 30;
+        this.birdRadius = 20;
 
         /** @type {BirdState[]} */
         this.states = [];
