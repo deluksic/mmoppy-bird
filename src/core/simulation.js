@@ -158,6 +158,22 @@ class Simulation {
             lerp(this.floor + this.wallGap / 2, this.ceiling - this.wallGap / 2, rnd));
         return wall;
     }
+
+    /**
+     * Generates all walls existing between given x values.
+     * @param {number} x0 
+     * @param {number} x1 
+     * @returns {Wall[]}
+     */
+    wallsBetween(x0, x1) {
+        let id1 = x0 / this.wallSeparation;
+        let id2 = 1 + x1 / this.wallSeparation;
+        let walls = [];
+        for (let i = id1; i <= id2; ++i) {
+            walls.push(this.wallAt(i));
+        }
+        return walls;
+    }
 }
 
 module.exports = {
