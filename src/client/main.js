@@ -202,15 +202,15 @@ function drawLeaderboard() {
  */
 function drawPillar(playerX, x, yMiddle) {
     context.fillStyle = "rgb(0, 0, 0)";
-    context.fillRect(x - playerX, 0, 80, 500 * yMiddle);
-    context.fillRect(x - playerX, 500 * yMiddle + 300, 80, 1000);
+    let topHeight = currentSimulation.ceiling - (currentSimulation.wallGap / 2 + yMiddle);
+    let bottom = currentSimulation.wallGap / 2 - yMiddle;
+    let bottomHeight = -currentSimulation.floor + bottom;
+    context.fillRect(x - playerX, 0, currentSimulation.wallThickness, topHeight);
+    context.fillRect(x - playerX, bottom, currentSimulation.wallThickness, bottomHeight);
 }
 
-function drawPillars(playerX) {
-    drawPillar(playerX, 400, 0.5);
-    drawPillar(playerX, 800, 0.25);
-    drawPillar(playerX, 1200, 0.75);
-    drawPillar(playerX, 1600, 0.5);
+function drawPillars(playerX, pillars) {
+    pillars.forEach(pillar => { drawPillar(playerX, pillar.x, pillar.y)});
 }
 
 function gameOver() {
@@ -246,7 +246,7 @@ function render() {
     drawSkyline();
     drawFERLogo(playerPosition.x);
     drawCloud(170, 80, 1.0);
-    drawPillars(playerPosition.x);
+    drawPillars(playerPosition.x, currentSimulation.wallsBetween(playerPosition.x - 1000, playerPosition.x + 4000));
     drawCloud(1000, 40, 0.9);
     drawCloud(830, 20, 0.8);
     drawGround(playerPosition.x);

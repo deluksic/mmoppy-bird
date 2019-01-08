@@ -38,9 +38,9 @@ class Wall {
      * @param {number} y
      */
     constructor(index, x, y) {
-        this.index = 0;
-        this.x = 0;
-        this.y = 0;
+        this.index = index;
+        this.x = x;
+        this.y = y;
     }
 }
 
@@ -167,8 +167,8 @@ class Simulation {
      * @returns {Wall[]}
      */
     wallsBetween(x0, x1) {
-        let id1 = x0 / this.wallSeparation;
-        let id2 = 1 + x1 / this.wallSeparation;
+        let id1 = Math.floor(x0 / this.wallSeparation);
+        let id2 = Math.floor(1 + x1 / this.wallSeparation);
         let walls = [];
         for (let i = id1; i <= id2; ++i) {
             walls.push(this.wallAt(i));
