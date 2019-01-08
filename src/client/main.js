@@ -14,6 +14,8 @@ const {
 let currentSimulation;
 let offset = 0;
 
+let cameraShift = 100;
+
 /** @type {HTMLCanvasElement} */
 let canvas;
 
@@ -158,6 +160,7 @@ var drawSkyline = () => {
  * @param {number} rotation
  */
 var drawBird = (playerX, x, y, name, rotation) => {
+    playerX -= cameraShift;
     let frame = ((offset / 4) % 7) | 0;
     let middleX = bird[frame].width / 2;
     let middleY = bird[frame].height / 2;
@@ -202,6 +205,7 @@ function drawLeaderboard() {
  * @param {number} yMiddle
  */
 function drawPillar(playerX, x, yMiddle) {
+    playerX -= cameraShift;
     context.fillStyle = "rgb(0, 0, 0)";
     let topHeight = yMiddle - currentSimulation.wallGap / 2;
     let bottom = yMiddle + currentSimulation.wallGap / 2;
@@ -211,7 +215,9 @@ function drawPillar(playerX, x, yMiddle) {
 }
 
 function drawPillars(playerX, pillars) {
-    pillars.forEach(pillar => { drawPillar(playerX, pillar.x, pillar.y)});
+    pillars.forEach(pillar => {
+        drawPillar(playerX, pillar.x, pillar.y)
+    });
 }
 
 function gameOver() {
@@ -273,7 +279,7 @@ function render() {
     // Draw local player
     drawBird(
         0,
-        48,
+        0,
         playerPosition.y,
         localPlayer.username,
         playerPosition.vspeed / 15

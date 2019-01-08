@@ -5,6 +5,8 @@ const {
     PlayerState
 } = require('core/networking');
 
+const debug = false;
+
 /** @type {{[key: string]: PlayerState}} */
 const players = {};
 
@@ -64,7 +66,7 @@ function setUsername(username, cb = null) {
 }
 
 function onConnect() {
-    console.log(`Connected as user ${socket.id}.`);
+    debug && console.log(`Connected as user ${socket.id}.`);
     _updateLocalPlayer(new PlayerState(socket.id));
 }
 
@@ -72,7 +74,7 @@ function onConnect() {
  * @param {PlayerState} player 
  */
 function onPlayerJoined(player) {
-    console.log(`User ${player.id} joined.`);
+    debug && console.log(`User ${player.id} joined.`);
     players[player.id] = player;
 }
 
@@ -80,7 +82,7 @@ function onPlayerJoined(player) {
  * @param {string} playerid 
  */
 function onPlayerLeft(playerid) {
-    console.log(`User ${playerid} left.`);
+    debug && console.log(`User ${playerid} left.`);
     delete players[playerid];
 }
 
@@ -88,7 +90,7 @@ function onPlayerLeft(playerid) {
  * @param {{[playerid: string]: Partial<PlayerState>}} playersUpdate
  */
 function onPlayersUpdate(playersUpdate) {
-    console.log(`Update came: ${JSON.stringify(playersUpdate)}.`);
+    debug && console.log(`Update came: ${JSON.stringify(playersUpdate)}.`);
     Object.assign(players, playersUpdate);
 }
 
