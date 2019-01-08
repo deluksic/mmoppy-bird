@@ -279,6 +279,23 @@ function render() {
         playerPosition.vspeed / 15
     );
 
+    // Draw local player colision
+    let collisionState = currentSimulation.calcState(
+        localPlayer.birdState,
+        localPlayer.birdState.time + currentSimulation.birdWallCollision(
+            localPlayer.birdState,
+            currentSimulation.wallsBetween(localPlayer.birdState.x, localPlayer.birdState.x)[1]
+        )
+    );
+
+    drawBird(
+        playerPosition.x,
+        collisionState.x,
+        collisionState.y,
+        `${localPlayer.username}-col`,
+        collisionState.vspeed / 15
+    );
+
     if (!playerPosition.valid) {
         gameOver();
     }
