@@ -2,6 +2,15 @@
 
 const _ = require('lodash');
 
+/**
+ * Generates a random number, given seed.
+ * @param {number} seed 
+ */
+function random(seed) {
+    var x = Math.sin(seed++) * 10000;
+    return x - Math.floor(x);
+}
+
 class BirdState {
     constructor() {
         this.x = 0;
@@ -13,13 +22,18 @@ class BirdState {
 }
 
 class Wall {
-    constructor(){
-        this.x = 0;
+    /**
+     * @param {number} index 
+     * @param {number} y 
+     */
+    constructor(index, y) {
+        this.index = 0;
         this.y = 0;
     }
 }
 
 class Simulation {
+
     constructor() {
         this.hspeed = 10;
         this.jumpSpeed = 8;
@@ -117,6 +131,15 @@ class Simulation {
             return _.last(this.states);
         }
         throw new Error("Could not find any states that are earlier than current time.");
+    }
+
+    /**
+     * Generates a wall at a given index.
+     * @param {number} index Integer value, index of the wall
+     */
+    wallAt(index) {
+        let wall = new Wall(index, random(this.seed + index + (1 + Math.abs(this.seed)) * index));
+        return wall;
     }
 }
 
