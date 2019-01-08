@@ -11,6 +11,16 @@ function random(seed) {
     return x - Math.floor(x);
 }
 
+/**
+ * Linearly interpolates from a to b, given k [0, 1].
+ * @param {number} a 
+ * @param {number} b 
+ * @param {number} k
+ */
+function lerp(a, b, k) {
+    return a + k * (b - a);
+}
+
 class BirdState {
     constructor() {
         this.x = 0;
@@ -23,11 +33,13 @@ class BirdState {
 
 class Wall {
     /**
-     * @param {number} index 
-     * @param {number} y 
+     * @param {number} index
+     * @param {number} x
+     * @param {number} y
      */
-    constructor(index, y) {
+    constructor(index, x, y) {
         this.index = 0;
+        this.x = 0;
         this.y = 0;
     }
 }
@@ -41,8 +53,9 @@ class Simulation {
         this.ceiling = 200;
         this.floor = -220;
         this.seed = 0;
-        this.wallWidth = 20;
+        this.wallThickness = 20;
         this.wallGap = 150;
+        this.wallSeparation = 300;
 
         /** @type {BirdState[]} */
         this.states = [];
@@ -138,7 +151,11 @@ class Simulation {
      * @param {number} index Integer value, index of the wall
      */
     wallAt(index) {
-        let wall = new Wall(index, random(this.seed + index + (1 + Math.abs(this.seed)) * index));
+        let rnd = random(this.seed + index + (1 + Math.abs(this.seed)) * index);
+        let wall = new Wall(
+            index,
+            index * this.wallSeparation,
+            lerp(this.floor + this.wallGap / 2, this.ceiling - this.wallGap / 2, rnd));
         return wall;
     }
 }
