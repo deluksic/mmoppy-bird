@@ -248,10 +248,10 @@ class Simulation {
      * @returns {number}
      */
     birdWallCollision(birdState, wall) {
-        let tVertLineBottom = this.birdVerticalLineCollision(birdState, wall.x - this.wallThickness / 2, this.floor, wall.y - this.wallGap / 2);
-        let tVertLineTop = this.birdVerticalLineCollision(birdState, wall.x - this.wallThickness / 2, wall.y + this.wallGap / 2, this.ceiling);
-        let tHorzLineBottom = this.birdHorizontalLineCollision(birdState, wall.y - this.wallGap / 2, wall.x - this.wallThickness / 2, wall.x + this.wallThickness);
-        let tHorzLineTop = this.birdHorizontalLineCollision(birdState, wall.y + this.wallGap / 2, wall.x - this.wallThickness / 2, wall.x + this.wallThickness);
+        let tVertLineBottom = this.birdVerticalLineCollision(birdState, wall.x - this.wallThickness / 2, wall.y + this.wallGap / 2, this.floor);
+        let tVertLineTop = this.birdVerticalLineCollision(birdState, wall.x - this.wallThickness / 2, this.ceiling, wall.y - this.wallGap / 2);
+        let tHorzLineBottom = this.birdHorizontalLineCollision(birdState, wall.y + this.wallGap / 2, wall.x, wall.x + this.wallThickness);
+        let tHorzLineTop = this.birdHorizontalLineCollision(birdState, wall.y - this.wallGap / 2, wall.x, wall.x + this.wallThickness);
         return Math.min(tVertLineBottom, tVertLineTop, tHorzLineBottom, tHorzLineTop);
     }
 }
