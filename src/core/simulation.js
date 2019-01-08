@@ -47,16 +47,16 @@ class Wall {
 class Simulation {
 
     constructor() {
-        this.hspeed = 5;
-        this.jumpSpeed = -8;
-        this.gravity = 0.5;
+        this.hspeed = 3;
+        this.jumpSpeed = -4;
+        this.gravity = 0.2;
         this.ceiling = 0;
         this.floor = 600;
         this.seed = 0;
         this.wallThickness = 150;
         this.wallGap = 300;
         this.wallSeparation = 550;
-        this.birdRadius = 50;
+        this.birdRadius = 0;
 
         /** @type {BirdState[]} */
         this.states = [];

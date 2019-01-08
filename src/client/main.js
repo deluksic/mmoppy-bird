@@ -183,8 +183,10 @@ var drawBird = (playerX, x, y, name, rotation) => {
 
     context.fillStyle = 'rgb(135, 0, 235)';
     context.font = "160px Sans";
+
     context.fillText(name, 0, 0);
     context.restore();
+
 }
 
 function drawLeaderboard() {
