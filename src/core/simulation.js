@@ -123,7 +123,7 @@ class Simulation {
             vspeed: previous.vspeed + this.gravity * dt,
             valid: previous.valid
         };
-        newState.valid = newState.y > this.floor && newState.y < this.ceiling;
+        newState.valid = newState.y < this.floor && newState.y > this.ceiling;
         return newState;
     }
 
