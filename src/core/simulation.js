@@ -12,6 +12,13 @@ class BirdState {
     }
 }
 
+class Wall {
+    constructor(){
+        this.x = 0;
+        this.y = 0;
+    }
+}
+
 class Simulation {
     constructor() {
         this.hspeed = 10;
@@ -20,6 +27,8 @@ class Simulation {
         this.ceiling = 200;
         this.floor = -220;
         this.seed = 0;
+        this.wallWidth = 20;
+        this.wallGap = 150;
 
         /** @type {BirdState[]} */
         this.states = [];
