@@ -7,7 +7,7 @@ const _ = require('lodash');
  * @param {number} seed 
  */
 function random(seed) {
-    var x = Math.sin(seed++) * 10000;
+    var x = Math.sin(seed) * 10000;
     return x - Math.floor(x);
 }
 
@@ -56,6 +56,7 @@ class Simulation {
         this.wallThickness = 20;
         this.wallGap = 150;
         this.wallSeparation = 300;
+        this.birdRadius = 30;
 
         /** @type {BirdState[]} */
         this.states = [];
@@ -173,6 +174,85 @@ class Simulation {
             walls.push(this.wallAt(i));
         }
         return walls;
+    }
+
+    /**
+     * Returns time needed for a bird to collide with a vertical line, not
+     * including the ends of the line.
+     * If there is no collision, +inf is returned.
+     * @param {BirdState} birdState 
+     * @param {number} lineX
+     * @param {number} lineY0
+     * @param {number} lineY1
+     * @returns {number}
+     */
+    birdVerticalLineCollision(birdState, lineX, lineY0, lineY1) {
+        let time = (lineX - birdState.x) / this.hspeed;
+        if (time < 0) {
+            return Number.POSITIVE_INFINITY;
+        }
+        let newBirdState = this.calcState(birdState, birdState.time + time);
+        if (newBirdState.y < lineY0 || newBirdState.y > lineY1) {
+            return Number.POSITIVE_INFINITY;
+        }
+        return time;
+    }
+
+    /**
+     * Returns time needed for a bird to collide with a horizontal line, not
+     * including the ends of the line.
+     * If there is no collision, +inf is returned.
+     * @param {BirdState} birdState 
+     * @param {number} lineY
+     * @param {number} lineX0
+     * @param {number} lineX1
+     * @returns {number}
+     */
+    birdHorizontalLineCollision(birdState, lineY, lineX0, lineX1) {
+        let a = 0.5 * this.gravity;
+        let b = birdState.vspeed;
+        let c = birdState.y - lineY;
+        let D = b * b - 4 * a * c;
+        if (D >= 0) {
+            let t = (-b + -Math.sqrt(D)) / (2 * a);
+            if (t < 0) {
+                return Number.POSITIVE_INFINITY;
+            }
+            let newBirdState = this.calcState(birdState, birdState.time + t);
+            if (newBirdState.x < lineX0 || newBirdState.x > lineX1) {
+                return Number.POSITIVE_INFINITY;
+            }
+            return t;
+        }
+        return Number.POSITIVE_INFINITY;
+    }
+
+    /**
+     * Returns time needed for a bird to collide with a point.
+     * If the point is behind the bird or the bird doesnt collide, 
+     * it is going to return negative value.
+     * @param {BirdState} birdState 
+     * @param {number} px
+     * @param {number} py
+     * @returns {number}
+     */
+    birdPointCollision(birdState, px, py) {
+        return -1;
+    }
+
+    /**
+     * Returns time needed for a bird to collide with a given wall.
+     * If
+     * @param {BirdState} birdState 
+     * @param {Wall} wall 
+     * @returns {number}
+     */
+    birdWallCollision(birdState, wall) {
+        let tVertLineBottom = this.birdVerticalLineCollision(birdState, wall.x - this.wallThickness / 2, this.floor, wall.y - this.wallGap / 2);
+        let tVertLineTop = this.birdVerticalLineCollision(birdState, wall.x - this.wallThickness / 2, wall.y + this.wallGap / 2, this.ceiling);
+        let tHorzLineBottom = this.birdHorizontalLineCollision(birdState, wall.y - this.wallGap / 2, wall.x - this.wallThickness / 2, wall.x + this.wallThickness);
+        let tHorzLineTop = this.birdHorizontalLineCollision(birdState, wall.y + this.wallGap / 2, wall.x - this.wallThickness / 2, wall.x + this.wallThickness);
+        return Math.min(tVertLineBottom, tVertLineTop, tHorzLineBottom, tHorzLineTop);
     }
 }
 
