@@ -92,25 +92,25 @@ function initPatterns() {
     skyline.onload = () => skylinePattern = context.createPattern(skyline, 'repeat');
 }
 
-function drawFERLogo() {
+function drawFERLogo(playerX) {
     context.globalAlpha = 0.50;
-    context.drawImage(ferLogo, 500 - offset * 0.25, 250, ferLogo.width, ferLogo.height);
+    context.drawImage(ferLogo, 500 - playerX * 0.25, 250, ferLogo.width, ferLogo.height);
     context.globalAlpha = 1.0;
 }
 
-var drawGrass = () => {
+var drawGrass = (playerX) => {
     context.save();
-    context.translate(-offset * 0.5, 0);
+    context.translate(-playerX, 0);
     context.fillStyle = grassPattern;
-    context.fillRect(offset * 0.5, canvas.height - 150, canvas.width, 50);
+    context.fillRect(playerX, canvas.height - 150, canvas.width, 50);
     context.restore();
 }
 
-var drawGround = () => {
+var drawGround = (playerX) => {
     context.save();
-    context.translate(-offset * 0.5, 0);
+    context.translate(-playerX, 0);
     context.fillStyle = groundPattern;
-    context.fillRect(offset * 0.5, canvas.height - 100, canvas.width, 100);
+    context.fillRect(playerX, canvas.height - 100, canvas.width, 100);
     context.restore();
 }
 
@@ -157,10 +157,10 @@ var drawSkyline = () => {
  * @param {string} name
  * @param {number} rotation
  */
-var drawBird = (x, y, name, rotation) => {
+var drawBird = (playerX, x, y, name, rotation) => {
     context.save();
+    context.translate(x - playerX, y);
     context.scale(0.15, 0.15);
-    context.translate(x, y);
 
     let frame = ((offset / 4) % 7) | 0;
 
@@ -200,17 +200,17 @@ function drawLeaderboard() {
  * @param {number} x
  * @param {number} yMiddle
  */
-function drawPillar(x, yMiddle) {
+function drawPillar(playerX, x, yMiddle) {
     context.fillStyle = "rgb(0, 0, 0)";
-    context.fillRect(x - offset * 0.5, 0, 80, 500 * yMiddle);
-    context.fillRect(x - offset * 0.5, 500 * yMiddle + 300, 80, 1000);
+    context.fillRect(x - playerX, 0, 80, 500 * yMiddle);
+    context.fillRect(x - playerX, 500 * yMiddle + 300, 80, 1000);
 }
 
-function drawPillars() {
-    drawPillar(400, 0.5);
-    drawPillar(800, 0.25);
-    drawPillar(1200, 0.75);
-    drawPillar(1600, 0.5);
+function drawPillars(playerX) {
+    drawPillar(playerX, 400, 0.5);
+    drawPillar(playerX, 800, 0.25);
+    drawPillar(playerX, 1200, 0.75);
+    drawPillar(playerX, 1600, 0.5);
 }
 
 function gameOver() {
@@ -239,19 +239,19 @@ function render() {
         return;
     }
 
+    let playerPosition = currentSimulation.positionAt(offset);
+
     context.clearRect(0, 0, canvas.width, canvas.height);
     drawSky();
     drawSkyline();
-    drawFERLogo();
+    drawFERLogo(playerPosition.x);
     drawCloud(170, 80, 1.0);
-    drawPillars();
+    drawPillars(playerPosition.x);
     drawCloud(1000, 40, 0.9);
     drawCloud(830, 20, 0.8);
-    drawGround();
-    drawGrass();
+    drawGround(playerPosition.x);
+    drawGrass(playerPosition.x);
     drawLeaderboard();
-
-    let playerPosition = currentSimulation.positionAt(offset);
 
     // Draw other players
     // TODO: Choppy!
@@ -261,17 +261,19 @@ function render() {
             continue;
         }
         drawBird(
+            playerPosition.x,
             player.birdState.x,
             -player.birdState.y * 10 + 1500,
             player.username,
             -player.birdState.vspeed / 15
         );
     }
-    
+
     // Draw local player
     drawBird(
-        playerPosition.x,
-        -playerPosition.y * 10 + 1500,
+        0,
+        48,
+        -playerPosition.y + 200,
         localPlayer.username,
         -playerPosition.vspeed / 15
     );
