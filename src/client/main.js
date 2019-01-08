@@ -63,7 +63,10 @@ function init() {
 
     canvas.width = 1280;
     canvas.height = 720;
-    canvas.onmousedown = () => playerAction();
+    canvas.onmousedown = (e) => {
+        playerAction();
+        e.preventDefault();
+    }
 
     context = canvas.getContext("2d");
 

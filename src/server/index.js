@@ -1,5 +1,6 @@
 // @ts-check
 // IMPORTANT: Use relative paths, because Node won't be happy!
+const os = require('os');
 const express = require('express');
 const http = require('http');
 const socketio = require('socket.io');
@@ -10,6 +11,33 @@ const {
 const {
     Simulation
 } = require('../core/simulation');
+
+/**
+ * @param {string} prefix
+ */
+function printAddresses(prefix) {
+    var ifaces = os.networkInterfaces();
+
+    Object.keys(ifaces).forEach(ifname => {
+        var alias = 0;
+
+        ifaces[ifname].forEach(iface => {
+            if ('IPv4' !== iface.family || iface.internal !== false) {
+                // skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
+                return;
+            }
+
+            if (alias >= 1) {
+                // this single interface has multiple ipv4 addresses
+                console.log(prefix, ifname + ':' + alias, iface.address);
+            } else {
+                // this interface has only one ipv4 adress
+                console.log(prefix, ifname, iface.address);
+            }
+            ++alias;
+        });
+    });
+}
 
 var app = express();
 
@@ -74,3 +102,8 @@ io.sockets.on('connect', function (socket) {
 });
 
 server.listen(8080, () => console.log(`Listening on ${JSON.stringify(server.address())}`));
+
+console.log("\nPress enter when everyone joins.\n");
+console.log("Choose either LAN or Wi-Fi IP to connect from phones:");
+printAddresses("    ");
+console.log();
