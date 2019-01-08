@@ -7,7 +7,9 @@
   "scripts": {
     "start": "concurrently \"npm:watch-*\"",
     "watch-client": "webpack --watch --mode=development",
-    "watch-server": "nodemon src/server/index.js"
+    "watch-server": "nodemon src/server/index.js",
+    "server": "node src/server/index.js",
+    "build-client": "webpack --mode production"
   },
   "author": "",
   "license": "ISC",
