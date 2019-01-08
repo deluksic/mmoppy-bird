@@ -202,9 +202,9 @@ function drawLeaderboard() {
  */
 function drawPillar(playerX, x, yMiddle) {
     context.fillStyle = "rgb(0, 0, 0)";
-    let topHeight = currentSimulation.ceiling - (currentSimulation.wallGap / 2 + yMiddle);
-    let bottom = currentSimulation.wallGap / 2 - yMiddle;
-    let bottomHeight = -currentSimulation.floor + bottom;
+    let topHeight = yMiddle - currentSimulation.wallGap / 2;
+    let bottom = yMiddle + currentSimulation.wallGap / 2;
+    let bottomHeight = currentSimulation.floor - bottom;
     context.fillRect(x - playerX, 0, currentSimulation.wallThickness, topHeight);
     context.fillRect(x - playerX, bottom, currentSimulation.wallThickness, bottomHeight);
 }
@@ -273,9 +273,9 @@ function render() {
     drawBird(
         0,
         48,
-        -playerPosition.y + 200,
+        playerPosition.y,
         localPlayer.username,
-        -playerPosition.vspeed / 15
+        playerPosition.vspeed / 15
     );
 
     if (!playerPosition.valid) {
