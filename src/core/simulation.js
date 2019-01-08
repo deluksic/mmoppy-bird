@@ -156,7 +156,7 @@ class Simulation {
         let wall = new Wall(
             index,
             index * this.wallSeparation,
-            lerp(this.floor + this.wallGap / 2, this.ceiling - this.wallGap / 2, rnd));
+            lerp(this.ceiling + this.wallGap / 2, this.floor - this.wallGap / 2, rnd));
         return wall;
     }
 
