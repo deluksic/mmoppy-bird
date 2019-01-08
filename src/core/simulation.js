@@ -122,5 +122,6 @@ class Simulation {
 
 module.exports = {
     BirdState,
-    Simulation
+    Simulation,
+    Wall
 }
