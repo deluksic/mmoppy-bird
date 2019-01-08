@@ -158,14 +158,15 @@ var drawSkyline = () => {
  * @param {number} rotation
  */
 var drawBird = (playerX, x, y, name, rotation) => {
-    context.save();
-    context.translate(x - playerX, y);
-    context.scale(0.15, 0.15);
-
     let frame = ((offset / 4) % 7) | 0;
-
     let middleX = bird[frame].width / 2;
     let middleY = bird[frame].height / 2;
+
+    context.save();
+    context.translate(x - playerX, y);
+
+    context.translate(-middleX / 8, -middleY / 8);
+    context.scale(0.15, 0.15);
 
     context.translate(middleX, middleY);
     context.rotate(rotation);
