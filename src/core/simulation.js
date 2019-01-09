@@ -181,8 +181,8 @@ class Simulation {
      * @returns {Wall[]}
      */
     wallsBetween(x0, x1) {
-        x0 = Math.max(x0, this.wallSeparation * 2);
-        x1 = Math.max(x1, this.wallSeparation * 2);
+        x0 = Math.max(x0, this.wallSeparation);
+        x1 = Math.max(x1, this.wallSeparation);
         let id1 = Math.floor(x0 / this.wallSeparation);
         let id2 = Math.floor(1 + x1 / this.wallSeparation);
         let walls = [];
@@ -285,10 +285,12 @@ class Simulation {
      * @param {BirdState} birdState 
      */
     nextBirdCollision(birdState) {
-        let wallCollisionTime = this.birdWallCollision(birdState, this.wallsBetween(birdState.x - this.wallThickness, birdState.x)[1]);
+        // @ts-ignore
+        /** @type {Wall} */
+        let wall = _.find(this.wallsBetween(birdState.x - this.wallThickness * 2, birdState.x), wall => wall.x >= birdState.x);
+        let wallCollisionTime = this.birdWallCollision(birdState, wall);
         let floorCollisionTime = this.birdFloorCollision(birdState);
-        // return Math.min(wallCollisionTime, floorCollisionTime);
-        return birdState.time + floorCollisionTime;
+        return birdState.time + Math.min(wallCollisionTime, floorCollisionTime);
     }
 }
 
