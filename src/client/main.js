@@ -17,7 +17,7 @@ let offset = 0;
 let previousOffset = 0;
 
 let cameraShift = 100;
-let debug = false;
+let debug = true;
 
 /** @type {HTMLCanvasElement} */
 let canvas;

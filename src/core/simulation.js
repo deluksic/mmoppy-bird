@@ -251,10 +251,75 @@ class Simulation {
      * @param {BirdState} birdState 
      * @param {number} px
      * @param {number} py
+     * @param {number} maxTime
+     * @param {number} step
      * @returns {number}
      */
-    birdPointCollision(birdState, px, py) {
-        return -1;
+    birdPointCollision(birdState, px, py, maxTime, step) {
+        let dx = birdState.x - px;
+        let dy = birdState.y - py;
+        let vx = this.hspeed;
+        let vy = birdState.vspeed;
+        let g = this.gravity;
+        let r = this.birdRadius;
+        /**
+         * @param {number} x0 
+         * @param {number} y0 
+         * @param {number} x1 
+         * @param {number} y1 
+         * @returns {number}
+         */
+        function dot(x0, y0, x1, y1) {
+            return x0 * x1 + y0 * y1;
+        }
+        let a = g * g / 4;
+        let b = dot(0, g, vx, vy);
+        let c = dot(vx, vy, vx, vy) + dot(0, g, dx, dy);
+        let d = 2 * dot(vx, vy, dx, dy);
+        let e = dot(dx, dy, dx, dy) - r * r;
+
+        /**
+         * Quatric function to find the root of.
+         * @param {number} t 
+         */
+        function quat(t) {
+            return (((a * t + b) * t + c) * t + d) * t + e;
+        }
+
+        /**
+         * Derivative of quatric function.
+         * @param {number} t 
+         */
+        function dquat(t) {
+            return ((4 * a * t + 3 * b) * t + 2 * c) * t + d;
+        }
+
+        /**
+         * Refines using Newton's method.
+         * @param {number} t
+         * @param {number} precision Integer
+         */
+        function refine(t, precision = 10) {
+            for (let i = 0; i < precision; ++i) {
+                let d = dquat(t);
+                if (d == 0) return Number.POSITIVE_INFINITY;
+                t -= quat(t) / d;
+                t = Math.min(Math.max(0, t), maxTime);
+            }
+            return t;
+        }
+
+        if (quat(0) <= 0) {
+            // the circle is already colliding with the point
+            return Number.POSITIVE_INFINITY;
+        }
+        for (let t = 0; t < maxTime; t += step) {
+            let distSq = quat(t);
+            if (distSq <= 0) {
+                return refine(t - step / 2);
+            }
+        }
+        return Number.POSITIVE_INFINITY;
     }
 
     /**
@@ -262,15 +327,21 @@ class Simulation {
      * If
      * @param {BirdState} birdState 
      * @param {Wall} wall 
+     * @param {number} maxTime 
      * @returns {number}
      */
-    birdWallCollision(birdState, wall) {
+    birdWallCollision(birdState, wall, maxTime) {
         let tVertLineBottom = this.birdVerticalLineCollision(birdState, wall.x, wall.y + this.wallGap / 2, this.floor);
         let tVertLineTop = this.birdVerticalLineCollision(birdState, wall.x, this.ceiling, wall.y - this.wallGap / 2);
         let tHorzLineBottom = this.birdHorizontalLineCollision(birdState, wall.y + this.wallGap / 2, wall.x, wall.x + this.wallThickness);
         let tHorzLineTop = this.birdHorizontalLineCollision(birdState, wall.y - this.wallGap / 2, wall.x, wall.x + this.wallThickness);
-        let time = Math.min(tVertLineBottom, tVertLineTop, tHorzLineBottom, tHorzLineTop);
-        return Math.max(0, time);
+        let time = Math.min(tVertLineBottom, tVertLineTop, tHorzLineBottom, tHorzLineTop, maxTime);
+        let tPointBottomLeft = this.birdPointCollision(birdState, wall.x, wall.y + this.wallGap / 2, time, 0.5);
+        let tPointBottomRight = this.birdPointCollision(birdState, wall.x + this.wallThickness, wall.y + this.wallGap / 2, time, 0.5);
+        let tPointTopLeft = this.birdPointCollision(birdState, wall.x, wall.y - this.wallGap / 2, time, 0.5);
+        let tPointTopRight = this.birdPointCollision(birdState, wall.x + this.wallThickness, wall.y - this.wallGap / 2, time, 0.5);
+        time = Math.min(time, tPointBottomLeft, tPointBottomRight, tPointTopLeft, tPointTopRight);
+        return time;
     }
 
     /**
@@ -288,8 +359,8 @@ class Simulation {
         // @ts-ignore
         /** @type {Wall} */
         let wall = _.find(this.wallsBetween(birdState.x - this.wallThickness, birdState.x), wall => wall.x >= birdState.x - this.wallThickness);
-        let wallCollisionTime = this.birdWallCollision(birdState, wall);
         let floorCollisionTime = this.birdFloorCollision(birdState);
+        let wallCollisionTime = this.birdWallCollision(birdState, wall, floorCollisionTime);
         return birdState.time + Math.min(wallCollisionTime, floorCollisionTime);
     }
 }
