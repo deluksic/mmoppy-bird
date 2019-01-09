@@ -332,7 +332,7 @@ class Simulation {
      */
     birdWallCollision(birdState, wall, maxTime) {
         let tVertLineBottom = this.birdVerticalLineCollision(birdState, wall.x, wall.y + this.wallGap / 2, this.floor);
-        let tVertLineTop = this.birdVerticalLineCollision(birdState, wall.x, this.ceiling, wall.y - this.wallGap / 2);
+        let tVertLineTop = this.birdVerticalLineCollision(birdState, wall.x, -10000, wall.y - this.wallGap / 2);
         let tHorzLineBottom = this.birdHorizontalLineCollision(birdState, wall.y + this.wallGap / 2, wall.x, wall.x + this.wallThickness);
         let tHorzLineTop = this.birdHorizontalLineCollision(birdState, wall.y - this.wallGap / 2, wall.x, wall.x + this.wallThickness);
         let time = Math.min(tVertLineBottom, tVertLineTop, tHorzLineBottom, tHorzLineTop, maxTime);

@@ -68,10 +68,15 @@ function init() {
 
     canvas.width = 1280;
     canvas.height = 720;
-    canvas.onmousedown = (e) => {
-        playerAction();
+
+    // detect touchscreen workaround.
+    var hasTouchStartEvent = 'ontouchstart' in document.createElement('div');
+
+    document.addEventListener(hasTouchStartEvent ? 'touchstart' : 'mousedown', function (e) {
         e.preventDefault();
-    }
+        e.stopPropagation();
+        playerAction();
+    });
 
     context = canvas.getContext("2d");
 
