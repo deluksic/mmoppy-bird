@@ -92,17 +92,15 @@ class Events {
      */
     constructor(socket) {
         /** @type {Message<PlayerState>} */
-        this.PlayerJoined = new Message('PlayerJoined', socket)
+        this.PlayerJoined = new Message('PlayerJoined', socket);
         /** @type {Message<PlayerID>} */
-        this.PlayerLeft = new Message('PlayerLeft', socket)
+        this.PlayerLeft = new Message('PlayerLeft', socket);
         /** @type {Message<{[playerid: string]: Partial<PlayerState>}>} */
-        this.PlayersUpdate = new Message('PlayerUpdate', socket)
+        this.PlayersUpdate = new Message('PlayerUpdate', socket);
         /** @type {RPC<Timestamp, PlayerState>} */
-        this.CmdJump = new RPC('CmdJump', socket)
-        /** @type {RPC<number, number>} */
-        this.RPCTest = new RPC('RPCTest', socket)
+        this.CmdJump = new RPC('CmdJump', socket);
         /** @type {RPC<string, boolean>} */
-        this.RPCSetUsername = new RPC('RPCSetUsename', socket)
+        this.RPCSetUsername = new RPC('RPCSetUsename', socket);
     }
 }
 

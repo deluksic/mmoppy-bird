@@ -44,14 +44,6 @@ function jump(timestamp, cb = null) {
 }
 
 /**
- * @param {number} x
- * @param {(res: number) => void} cb
- */
-function rpcTest(x, cb) {
-    events.RPCTest.call(x, cb);
-}
-
-/**
  * @param {string} username 
  * @param {(response: boolean) => void} cb 
  */
@@ -96,7 +88,6 @@ function onPlayersUpdate(playersUpdate) {
 
 module.exports = {
     jump,
-    rpcTest,
     setUsername,
     players,
     localPlayer

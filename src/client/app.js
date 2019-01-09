@@ -1,7 +1,6 @@
 const {
     init,
-    render,
-    playerAction
+    render
 } = require('client/main')
 
 function loop() {
