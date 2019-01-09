@@ -286,9 +286,9 @@ function render() {
         drawBird(
             playerPosition.x,
             player.birdState.x,
-            -player.birdState.y * 10 + 1500,
+            player.birdState.y,
             player.username,
-            -player.birdState.vspeed / 15
+            player.birdState.vspeed / 15
         );
     }
 
