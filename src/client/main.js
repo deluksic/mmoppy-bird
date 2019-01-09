@@ -170,6 +170,7 @@ var drawSkyline = () => {
  * @param {number} y
  * @param {string} name
  * @param {number} rotation
+ * @param {number} birdTime
  */
 var drawBird = (playerX, x, y, name, rotation, birdTime) => {
     playerX -= cameraShift;
@@ -314,12 +315,12 @@ function render() {
             continue;
         }
 
-        if(player.birdState === undefined) {
+        if (player.birdState === undefined) {
             continue;
         }
 
         let effectiveOffset;
-        if(isGameOver) {
+        if (isGameOver) {
             effectiveOffset = previousOffset;
         } else {
             effectiveOffset = offset;
@@ -335,7 +336,7 @@ function render() {
         let nextState;
         let birdTime;
 
-        if(player.birdState.valid) {
+        if (player.birdState.valid) {
             nextState = interpolated;
             birdTime = player.birdState.time + localDelta;
         } else {
@@ -378,7 +379,7 @@ function render() {
     ys.push(collisionState.y);
     drawPath(playerPosition.x, xs, ys);
 
-    if (!currentSimulation.validateJump(lastState, offset)) {
+    if (!currentSimulation.validateJump(lastState, offset) && !isGameOver) {
         gameOver();
     }
 
