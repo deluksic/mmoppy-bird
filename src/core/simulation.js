@@ -49,11 +49,11 @@ class Simulation {
     constructor() {
         this.hspeed = 3;
         this.jumpSpeed = -4;
-        this.gravity = 0.2;
+        this.gravity = 0.1;
         this.ceiling = 0;
         this.floor = 600;
         this.seed = 0;
-        this.wallThickness = 150;
+        this.wallThickness = 300;
         this.wallGap = 300;
         this.wallSeparation = 550;
         this.birdRadius = 50;
@@ -235,8 +235,8 @@ class Simulation {
             if (t < 0) {
                 return Number.POSITIVE_INFINITY;
             }
-            let newBirdState = this.calcState(birdState, birdState.time + t);
-            if (newBirdState.x < lineX0 || newBirdState.x > lineX1) {
+            let newx = birdState.x + this.hspeed * t;
+            if (newx < lineX0 || newx > lineX1) {
                 return Number.POSITIVE_INFINITY;
             }
             return t;
@@ -287,7 +287,7 @@ class Simulation {
     nextBirdCollision(birdState) {
         // @ts-ignore
         /** @type {Wall} */
-        let wall = _.find(this.wallsBetween(birdState.x - this.wallThickness * 2, birdState.x), wall => wall.x >= birdState.x);
+        let wall = _.find(this.wallsBetween(birdState.x - this.wallThickness, birdState.x), wall => wall.x >= birdState.x - this.wallThickness);
         let wallCollisionTime = this.birdWallCollision(birdState, wall);
         let floorCollisionTime = this.birdFloorCollision(birdState);
         return birdState.time + Math.min(wallCollisionTime, floorCollisionTime);
