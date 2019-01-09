@@ -9,3 +9,14 @@ body {
 #main_canvas {
     width: 100vw;
 }
+
+#authors {
+    position: absolute;
+    background-color: #fff;
+    box-shadow: 0px 0px 8px 2px;
+    bottom: 32px;
+    right: 32px;
+    padding: 0em 1em;
+    line-height: 0.25em;
+    font-family: "Helvetica Neue", "Calibri Light", Roboto, sans-serif;
+}
