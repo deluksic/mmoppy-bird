@@ -7,12 +7,14 @@ const {
     jump,
     players,
     localPlayer,
-    setUsername
+    setUsername,
+    updateLocalTimestamp
 } = require('client/client');
 
 /** @type {Simulation} */
 let currentSimulation;
 let offset = 0;
+let previousOffset = 0;
 
 let cameraShift = 100;
 
@@ -169,9 +171,9 @@ var drawSkyline = () => {
  * @param {string} name
  * @param {number} rotation
  */
-var drawBird = (playerX, x, y, name, rotation) => {
+var drawBird = (playerX, x, y, name, rotation, birdTime) => {
     playerX -= cameraShift;
-    let frame = ((offset / 4) % 7) | 0;
+    let frame = ((birdTime / 4) % 7) | 0;
     let middleX = bird[frame].width / 2;
     let middleY = bird[frame].height / 2;
 
@@ -265,6 +267,7 @@ function drawPillars(playerX, pillars) {
 }
 
 function gameOver() {
+    previousOffset = offset;
     isGameOver = true;
 }
 
@@ -310,12 +313,43 @@ function render() {
         if (player.id === localPlayer.id) {
             continue;
         }
+
+        if(player.birdState === undefined) {
+            continue;
+        }
+
+        let effectiveOffset;
+        if(isGameOver) {
+            effectiveOffset = previousOffset;
+        } else {
+            effectiveOffset = offset;
+        }
+
+        let localDelta = Math.max(0, effectiveOffset - player.localTimestamp);
+
+        let interpolated = currentSimulation.calcState(
+            player.birdState,
+            player.birdState.time + localDelta
+        );
+
+        let nextState;
+        let birdTime;
+
+        if(player.birdState.valid) {
+            nextState = interpolated;
+            birdTime = player.birdState.time + localDelta;
+        } else {
+            nextState = player.birdState;
+            birdTime = player.birdState.time;
+        }
+
         drawBird(
             playerPosition.x,
-            player.birdState.x,
-            player.birdState.y,
+            nextState.x,
+            nextState.y,
             player.username,
-            player.birdState.vspeed / 15
+            nextState.vspeed / 15,
+            birdTime
         );
     }
 
@@ -325,7 +359,8 @@ function render() {
         0,
         playerPosition.y,
         localPlayer.username,
-        playerPosition.vspeed / 15
+        playerPosition.vspeed / 15,
+        offset
     );
 
     let collisionTime = currentSimulation.nextBirdCollision(lastState);
@@ -349,6 +384,10 @@ function render() {
 
     if (!isGameOver) {
         ++offset;
+        updateLocalTimestamp(offset);
+    } else {
+        ++previousOffset;
+        updateLocalTimestamp(previousOffset);
     }
 }
 
