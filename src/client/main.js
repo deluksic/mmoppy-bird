@@ -17,6 +17,7 @@ let offset = 0;
 let previousOffset = 0;
 
 let cameraShift = 100;
+let debug = false;
 
 /** @type {HTMLCanvasElement} */
 let canvas;
@@ -377,7 +378,9 @@ function render() {
     let collisionState = currentSimulation.positionAt(collisionTime);
     xs.push(collisionState.x);
     ys.push(collisionState.y);
-    drawPath(playerPosition.x, xs, ys);
+    if (debug) {
+        drawPath(playerPosition.x, xs, ys);
+    }
 
     if (!currentSimulation.validateJump(lastState, offset) && !isGameOver) {
         gameOver();
