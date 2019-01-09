@@ -13,6 +13,9 @@ const players = {};
 /** @type {PlayerState} */
 const localPlayer = new PlayerState(undefined);
 
+/** @type {number} */
+let localTimestamp = 0;
+
 const socket = io();
 socket.on('connect', onConnect);
 
@@ -20,6 +23,11 @@ const events = new Events(socket);
 events.PlayerJoined.register(onPlayerJoined);
 events.PlayerLeft.register(onPlayerLeft);
 events.PlayersUpdate.register(onPlayersUpdate);
+
+/** @param {number} value */
+function updateLocalTimestamp(value) {
+    localTimestamp = value;
+}
 
 /**
  * Shortcut to update both local player and players entry.
@@ -82,6 +90,9 @@ function onPlayerLeft(playerid) {
  * @param {{[playerid: string]: Partial<PlayerState>}} playersUpdate
  */
 function onPlayersUpdate(playersUpdate) {
+    for(let key in playersUpdate) {
+        playersUpdate[key].localTimestamp = localTimestamp;
+    }
     debug && console.log(`Update came: ${JSON.stringify(playersUpdate)}.`);
     Object.assign(players, playersUpdate);
 }
@@ -90,5 +101,6 @@ module.exports = {
     jump,
     setUsername,
     players,
-    localPlayer
+    localPlayer,
+    updateLocalTimestamp
 }
