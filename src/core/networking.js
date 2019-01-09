@@ -83,6 +83,8 @@ class PlayerState {
         this.username = id;
         /** @type {number | null} */
         this.highscore = null;
+        /** @type {number} */
+        this.localTimestamp = 0;
     }
 }
 

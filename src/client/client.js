@@ -5,7 +5,7 @@ const {
     PlayerState
 } = require('core/networking');
 
-const debug = false;
+const debug = true;
 
 /** @type {{[key: string]: PlayerState}} */
 const players = {};
@@ -82,6 +82,9 @@ function onPlayerLeft(playerid) {
  * @param {{[playerid: string]: Partial<PlayerState>}} playersUpdate
  */
 function onPlayersUpdate(playersUpdate) {
+    for(let key in playersUpdate) {
+        playersUpdate[key].localTimestamp = 90;
+    }
     debug && console.log(`Update came: ${JSON.stringify(playersUpdate)}.`);
     Object.assign(players, playersUpdate);
 }

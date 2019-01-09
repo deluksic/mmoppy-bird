@@ -7,7 +7,9 @@ const {
     jump,
     players,
     localPlayer,
-    setUsername
+    setUsername,
+    localTimestamp,
+    updateLocalTimestamp
 } = require('client/client');
 
 /** @type {Simulation} */
@@ -282,12 +284,22 @@ function render() {
         if (player.id === localPlayer.id) {
             continue;
         }
+
+        if(player.birdState === undefined) {
+            continue;
+        }
+
+        let interpolated = currentSimulation.calcState(
+            player.birdState,
+            localTimestamp - player.localTimestamp
+        );
+
         drawBird(
             playerPosition.x,
-            player.birdState.x,
-            player.birdState.y,
+            interpolated.x,
+            interpolated.y,
             player.username,
-            player.birdState.vspeed / 15
+            interpolated.vspeed / 15
         );
     }
 
@@ -331,6 +343,7 @@ function render() {
     if (!isGameOver) {
         ++offset;
     }
+    updateLocalTimestamp(localTimestamp + 1);
 }
 
 module.exports = {
