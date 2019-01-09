@@ -59,7 +59,7 @@ io.sockets.on('connect', function (socket) {
 
     const simulation = new Simulation();
     const player = new PlayerState(socket.id);
-    player.birdState = simulation.init(0);
+    player.birdState = simulation.init();
     players[socket.id] = player;
 
     // Register events
@@ -75,18 +75,18 @@ io.sockets.on('connect', function (socket) {
     });
     events.PlayerJoined.broadcast(player);
     events.PlayersUpdate.emit(players);
-    events.RPCTest.register((x, cb) => cb(x * x));
     events.CmdJump.register((time, cb) => {
         try {
-            let newState = simulation.addJump(time);
-            player.highscore = Math.max(player.highscore, newState.time);
-            player.birdState = newState;
+            simulation.validateState(player.birdState, time);
+            player.birdState = simulation.addJump(time);
+            player.highscore = Math.max(player.highscore, player.birdState.time);
+            cb && cb(player);
             events.PlayersUpdate.broadcast({
                 [player.id]: player
             });
-            cb && cb(player);
-            if (!newState.valid) {
-                simulation.init(0);
+            if (!player.birdState.valid) {
+                // reset state to beginning, client should do the same
+                player.birdState = simulation.init();
             }
         } catch (ex) {
             console.error(ex);

@@ -65,11 +65,11 @@ class Simulation {
     /**
      * Init should be called first before doing anything with the simulation.
      * Resets the states array and adds the initial state.
-     * @param {number} seed
      * @returns {BirdState} The initial state
      */
-    init(seed) {
-        this.seed = seed;
+    init() {
+        // TODO: this.seed = seed;
+        this.seed = 0;
         let initState = new BirdState();
         this.states = [initState];
         return initState;
@@ -123,8 +123,18 @@ class Simulation {
             vspeed: previous.vspeed + this.gravity * dt,
             valid: previous.valid
         };
-        newState.valid = newState.y < this.floor && newState.y > this.ceiling;
         return newState;
+    }
+
+    /**
+     * Validates state in place and returns validity.
+     * @param {BirdState} birdState 
+     * @param {number} time 
+     * @returns {boolean}
+     */
+    validateState(birdState, time) {
+        let collisionTime = this.nextBirdCollision(birdState);
+        return birdState.valid = collisionTime > time;
     }
 
     /**
@@ -167,6 +177,8 @@ class Simulation {
      * @returns {Wall[]}
      */
     wallsBetween(x0, x1) {
+        x0 = Math.max(x0, this.wallSeparation * 2);
+        x1 = Math.max(x1, this.wallSeparation * 2);
         let id1 = Math.floor(x0 / this.wallSeparation);
         let id2 = Math.floor(1 + x1 / this.wallSeparation);
         let walls = [];
@@ -254,8 +266,25 @@ class Simulation {
         let tHorzLineBottom = this.birdHorizontalLineCollision(birdState, wall.y + this.wallGap / 2, wall.x, wall.x + this.wallThickness);
         let tHorzLineTop = this.birdHorizontalLineCollision(birdState, wall.y - this.wallGap / 2, wall.x, wall.x + this.wallThickness);
         let time = Math.min(tVertLineBottom, tVertLineTop, tHorzLineBottom, tHorzLineTop);
-        console.log(time);
-        return time;
+        return Math.max(0, time);
+    }
+
+    /**
+     * @param {BirdState} birdState 
+     */
+    birdFloorCollision(birdState) {
+        return this.birdHorizontalLineCollision(birdState, this.floor, birdState.x, birdState.x + 10000);
+    }
+
+    /**
+     * Calculates a time where the bird hits the first obstacle.
+     * @param {BirdState} birdState 
+     */
+    nextBirdCollision(birdState) {
+        let wallCollisionTime = this.birdWallCollision(birdState, this.wallsBetween(birdState.x - this.wallThickness, birdState.x)[1]);
+        let floorCollisionTime = this.birdFloorCollision(birdState);
+        // return Math.min(wallCollisionTime, floorCollisionTime);
+        return birdState.time + floorCollisionTime;
     }
 }
 

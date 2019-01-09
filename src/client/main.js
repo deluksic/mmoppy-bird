@@ -1,10 +1,10 @@
 // @ts-check
 const {
+    Wall,
     Simulation
 } = require('core/simulation');
 const {
     jump,
-    rpcTest,
     players,
     localPlayer,
     setUsername
@@ -52,8 +52,9 @@ function mod(x, y) {
 
 function startSimulation() {
     currentSimulation = new Simulation();
-    currentSimulation.init(123);
+    currentSimulation.init();
     offset = 0;
+    isGameOver = false;
 }
 
 function init() {
@@ -75,9 +76,6 @@ function init() {
     initPatterns();
 
     startSimulation();
-
-    // Testing out networking
-    rpcTest(10, (res) => console.log(res));
 }
 
 function initPatterns() {
@@ -94,12 +92,18 @@ function initPatterns() {
     skyline.onload = () => skylinePattern = context.createPattern(skyline, 'repeat');
 }
 
+/**
+ * @param {number} playerX
+ */
 function drawFERLogo(playerX) {
     context.globalAlpha = 0.50;
     context.drawImage(ferLogo, 500 - playerX * 0.25, 250, ferLogo.width, ferLogo.height);
     context.globalAlpha = 1.0;
 }
 
+/**
+ * @param {number} playerX
+ */
 var drawGrass = (playerX) => {
     context.save();
     context.translate(-playerX, 0);
@@ -108,6 +112,9 @@ var drawGrass = (playerX) => {
     context.restore();
 }
 
+/**
+ * @param {number} playerX
+ */
 var drawGround = (playerX) => {
     context.save();
     context.translate(-playerX, 0);
@@ -154,6 +161,7 @@ var drawSkyline = () => {
 }
 
 /**
+ * @param {number} playerX
  * @param {number} x
  * @param {number} y
  * @param {string} name
@@ -203,6 +211,7 @@ function drawLeaderboard() {
 }
 
 /**
+ * @param {number} playerX
  * @param {number} x
  * @param {number} yMiddle
  */
@@ -216,6 +225,11 @@ function drawPillar(playerX, x, yMiddle) {
     context.fillRect(x - playerX, bottom, currentSimulation.wallThickness, bottomHeight);
 }
 
+/**
+ * 
+ * @param {number} playerX 
+ * @param {Wall[]} pillars 
+ */
 function drawPillars(playerX, pillars) {
     pillars.forEach(pillar => {
         drawPillar(playerX, pillar.x, pillar.y)
@@ -230,16 +244,15 @@ function playerAction() {
     let time = offset + 1;
     if (!isGameOver) {
         currentSimulation.addJump(time);
-        jump(time, ps => {
-            console.log(`Server says you jumped at ${ps.birdState.time}.`);
-        });
-    } else {
-        jump(time, ps => {
-            console.log(`Game over? Server says: ${!ps.birdState.valid}.`)
-            startSimulation();
-            isGameOver = false;
-        });
     }
+    jump(time, ps => {
+        if (ps.birdState.valid) {
+            console.log(`Server says you jumped at ${ps.birdState.time}.`);
+        } else {
+            console.log(`Server says game over.`)
+            startSimulation();
+        }
+    });
 }
 
 function render() {
@@ -287,13 +300,12 @@ function render() {
         playerPosition.vspeed / 15
     );
 
+    let collisionTime = currentSimulation.nextBirdCollision(localPlayer.birdState);
+
     // Draw local player colision
     let collisionState = currentSimulation.calcState(
         localPlayer.birdState,
-        localPlayer.birdState.time + currentSimulation.birdWallCollision(
-            localPlayer.birdState,
-            currentSimulation.wallsBetween(localPlayer.birdState.x, localPlayer.birdState.x)[1]
-        )
+        collisionTime
     );
 
     drawBird(
@@ -304,7 +316,15 @@ function render() {
         collisionState.vspeed / 15
     );
 
-    if (!playerPosition.valid) {
+    drawBird(
+        playerPosition.x,
+        localPlayer.birdState.x,
+        localPlayer.birdState.y,
+        `${localPlayer.username}-col`,
+        localPlayer.birdState.vspeed / 15
+    );
+
+    if (!currentSimulation.validateState(localPlayer.birdState, offset)) {
         gameOver();
     }
 
