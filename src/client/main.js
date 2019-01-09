@@ -52,7 +52,7 @@ function mod(x, y) {
 
 function startSimulation() {
     currentSimulation = new Simulation();
-    localPlayer.birdState = currentSimulation.init();
+    currentSimulation.init();
     isGameOver = false;
 }
 
@@ -199,6 +199,32 @@ var drawBird = (playerX, x, y, name, rotation) => {
 
 }
 
+/**
+ * @param {number} playerX
+ * @param {number[]} xs
+ * @param {number[]} ys
+ */
+var drawPath = (playerX, xs, ys) => {
+    let len = Math.min(xs.length, ys.length);
+    playerX -= cameraShift;
+    context.save();
+    context.translate(-playerX, 0);
+    context.beginPath();
+    context.moveTo(xs[0], ys[0])
+    for (let i = 1; i < len; ++i) {
+        context.lineTo(xs[i], ys[i]);
+    }
+    context.strokeStyle = '#F00';
+    context.stroke();
+    context.beginPath();
+    context.ellipse(xs[0], ys[0], currentSimulation.birdRadius, currentSimulation.birdRadius, 0, 0, 2 * Math.PI);
+    context.stroke();
+    context.beginPath();
+    context.ellipse(xs[len - 1], ys[len - 1], currentSimulation.birdRadius, currentSimulation.birdRadius, 0, 0, 2 * Math.PI);
+    context.stroke();
+    context.restore();
+}
+
 function drawLeaderboard() {
     context.fillStyle = "rgb(135, 0, 235)";
     context.font = "32px Sans";
@@ -263,6 +289,7 @@ function render() {
     }
 
     let playerPosition = currentSimulation.positionAt(offset);
+    let lastState = currentSimulation.lastState();
 
     context.clearRect(0, 0, canvas.width, canvas.height);
     drawSky();
@@ -301,32 +328,22 @@ function render() {
         playerPosition.vspeed / 15
     );
 
-    let collisionTime = currentSimulation.nextBirdCollision(localPlayer.birdState);
+    let collisionTime = currentSimulation.nextBirdCollision(lastState);
 
-    let collisionState = currentSimulation.calcState(
-        localPlayer.birdState,
-        collisionTime
-    );
+    // draw collision line
+    let xs = [];
+    let ys = [];
+    for (let t = currentSimulation.lastState().time; t < collisionTime; ++t) {
+        let next = currentSimulation.positionAt(t);
+        xs.push(next.x);
+        ys.push(next.y);
+    }
+    let collisionState = currentSimulation.positionAt(collisionTime);
+    xs.push(collisionState.x);
+    ys.push(collisionState.y);
+    drawPath(playerPosition.x, xs, ys);
 
-    // Draw player collision
-    drawBird(
-        playerPosition.x,
-        collisionState.x,
-        collisionState.y,
-        `${localPlayer.username}-col`,
-        collisionState.vspeed / 15
-    );
-
-    // Draw player last state
-    drawBird(
-        playerPosition.x,
-        localPlayer.birdState.x,
-        localPlayer.birdState.y,
-        `${localPlayer.username}-col`,
-        localPlayer.birdState.vspeed / 15
-    );
-
-    if (!currentSimulation.validateJump(localPlayer.birdState, offset)) {
+    if (!currentSimulation.validateJump(lastState, offset)) {
         gameOver();
     }
 

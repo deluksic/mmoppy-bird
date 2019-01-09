@@ -56,7 +56,7 @@ class Simulation {
         this.wallThickness = 150;
         this.wallGap = 300;
         this.wallSeparation = 550;
-        this.birdRadius = 0;
+        this.birdRadius = 50;
 
         /** @type {BirdState[]} */
         this.states = [];
@@ -75,6 +75,13 @@ class Simulation {
         return initState;
     }
 
+    lastState() {
+        if (!this.states) {
+            throw new Error("Call init on a simulation before doing anything else.")
+        }
+        return _.last(this.states);
+    }
+
     /**
      * Add a jump discontinuity at a given time.
      * NOTE: time must be integer, in frames.
@@ -85,10 +92,7 @@ class Simulation {
         if (time % 1 !== 0) {
             throw new Error("Time stamp must be integer.");
         }
-        if (!this.states) {
-            throw new Error("Call init on a simulation before doing anything else.")
-        }
-        let lastState = _.last(this.states);
+        let lastState = this.lastState();
         if (lastState) {
             if (time <= lastState.time) {
                 throw new Error("New jump can not be older than the last one.");
