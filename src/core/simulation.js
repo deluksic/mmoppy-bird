@@ -48,15 +48,15 @@ class Simulation {
 
     constructor() {
         this.hspeed = 4;
-        this.jumpSpeed = -6;
+        this.jumpSpeed = -7;
         this.gravity = 0.3;
         this.ceiling = 0;
         this.floor = 600;
         this.seed = 0;
-        this.wallThickness = 120;
-        this.wallGap = 250;
-        this.wallSeparation = 400;
-        this.birdRadius = 40;
+        this.wallThickness = 80;
+        this.wallGap = 220;
+        this.wallSeparation = 340;
+        this.birdRadius = 35;
 
         /** @type {BirdState[]} */
         this.states = [];
@@ -181,8 +181,8 @@ class Simulation {
      * @returns {Wall[]}
      */
     wallsBetween(x0, x1) {
-        x0 = Math.max(x0, this.wallSeparation);
-        x1 = Math.max(x1, this.wallSeparation);
+        x0 = Math.max(x0, this.wallSeparation * 2);
+        x1 = Math.max(x1, this.wallSeparation * 2);
         let id1 = Math.floor(x0 / this.wallSeparation);
         let id2 = Math.floor(1 + x1 / this.wallSeparation);
         let walls = [];

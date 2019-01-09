@@ -16,7 +16,7 @@ let currentSimulation;
 let offset = 0;
 let previousOffset = 0;
 
-let cameraShift = 100;
+let cameraShift = 300;
 let debug = false;
 
 /** @type {HTMLCanvasElement} */

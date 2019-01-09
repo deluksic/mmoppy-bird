@@ -13,10 +13,11 @@ body {
 #authors {
     position: absolute;
     background-color: #fff;
-    box-shadow: 0px 0px 8px 2px;
-    bottom: 32px;
-    right: 32px;
-    padding: 0em 1em;
-    line-height: 0.25em;
+    box-shadow: 0px 0px 3vh 2vh rgba(0, 0, 0, 0.4);
+    bottom: 3vh;
+    right: 3vh;
+    padding: 1.5vh 2vh;
+    line-height: 0.25vh;
+    font-size: 2vh;
     font-family: "Helvetica Neue", "Calibri Light", Roboto, sans-serif;
 }
