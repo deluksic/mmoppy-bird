@@ -127,14 +127,14 @@ class Simulation {
     }
 
     /**
-     * Validates state in place and returns validity.
+     * Returns validity of jump.
      * @param {BirdState} birdState 
      * @param {number} time 
      * @returns {boolean}
      */
-    validateState(birdState, time) {
+    validateJump(birdState, time) {
         let collisionTime = this.nextBirdCollision(birdState);
-        return birdState.valid = collisionTime > time;
+        return collisionTime > time;
     }
 
     /**

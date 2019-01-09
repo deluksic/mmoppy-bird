@@ -77,7 +77,7 @@ io.sockets.on('connect', function (socket) {
     events.PlayersUpdate.emit(players);
     events.CmdJump.register((time, cb) => {
         try {
-            simulation.validateState(player.birdState, time);
+            player.birdState.valid = simulation.validateJump(player.birdState, time);
             player.birdState = simulation.addJump(time);
             player.highscore = Math.max(player.highscore, player.birdState.time);
             cb && cb(player);

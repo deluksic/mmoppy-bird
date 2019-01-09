@@ -52,8 +52,7 @@ function mod(x, y) {
 
 function startSimulation() {
     currentSimulation = new Simulation();
-    currentSimulation.init();
-    offset = 0;
+    localPlayer.birdState = currentSimulation.init();
     isGameOver = false;
 }
 
@@ -96,9 +95,12 @@ function initPatterns() {
  * @param {number} playerX
  */
 function drawFERLogo(playerX) {
+    context.save();
     context.globalAlpha = 0.50;
-    context.drawImage(ferLogo, 500 - playerX * 0.25, 250, ferLogo.width, ferLogo.height);
+    context.translate(-playerX * 0.25, 0);
+    context.drawImage(ferLogo, 500, 250, ferLogo.width, ferLogo.height);
     context.globalAlpha = 1.0;
+    context.restore();
 }
 
 /**
@@ -242,15 +244,14 @@ function gameOver() {
 
 function playerAction() {
     let time = offset + 1;
-    if (!isGameOver) {
-        currentSimulation.addJump(time);
-    }
+    currentSimulation.addJump(time);
     jump(time, ps => {
         if (ps.birdState.valid) {
             console.log(`Server says you jumped at ${ps.birdState.time}.`);
         } else {
             console.log(`Server says game over.`)
             startSimulation();
+            offset = 0;
         }
     });
 }
@@ -302,12 +303,12 @@ function render() {
 
     let collisionTime = currentSimulation.nextBirdCollision(localPlayer.birdState);
 
-    // Draw local player colision
     let collisionState = currentSimulation.calcState(
         localPlayer.birdState,
         collisionTime
     );
 
+    // Draw player collision
     drawBird(
         playerPosition.x,
         collisionState.x,
@@ -316,6 +317,7 @@ function render() {
         collisionState.vspeed / 15
     );
 
+    // Draw player last state
     drawBird(
         playerPosition.x,
         localPlayer.birdState.x,
@@ -324,7 +326,7 @@ function render() {
         localPlayer.birdState.vspeed / 15
     );
 
-    if (!currentSimulation.validateState(localPlayer.birdState, offset)) {
+    if (!currentSimulation.validateJump(localPlayer.birdState, offset)) {
         gameOver();
     }
 
